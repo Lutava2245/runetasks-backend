@@ -23,6 +23,7 @@ import com.fatec.runetasks.domain.repository.RoleRepository;
 import com.fatec.runetasks.domain.repository.SkillRepository;
 import com.fatec.runetasks.domain.repository.UserRepository;
 import com.fatec.runetasks.exception.DuplicateResourceException;
+import com.fatec.runetasks.exception.InvalidPasswordException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.exception.SamePasswordException;
 import com.fatec.runetasks.service.UserService;
@@ -137,6 +138,10 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
         
+        if (!passwordEncoder.matches(user.getPassword(), requestDTO.getCurrentPassword())) {
+            throw new InvalidPasswordException();
+        }
+
         if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
             throw new SamePasswordException();
         }

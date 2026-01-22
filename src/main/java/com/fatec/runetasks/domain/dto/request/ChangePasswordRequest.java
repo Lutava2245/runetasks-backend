@@ -9,6 +9,10 @@ public class ChangePasswordRequest {
 
     @Valid
     @NotBlank
+    private String currentPassword;
+
+    @Valid
+    @NotBlank
     private String newPassword;
 
 }
