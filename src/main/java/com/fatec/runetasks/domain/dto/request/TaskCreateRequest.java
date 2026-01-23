@@ -1,5 +1,7 @@
 package com.fatec.runetasks.domain.dto.request;
 
+import java.time.LocalDate;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,5 +27,11 @@ public class TaskCreateRequest {
     @Valid
     @NotNull
     private String skillName;
+
+    @Valid
+    private LocalDate date;
+
+    @Valid
+    private String repeatType;
 
 }
