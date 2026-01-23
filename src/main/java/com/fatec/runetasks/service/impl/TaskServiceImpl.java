@@ -1,9 +1,11 @@
 package com.fatec.runetasks.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,8 @@ import com.fatec.runetasks.domain.dto.response.TaskResponse;
 import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
+import com.fatec.runetasks.domain.model.enums.RepeatType;
+import com.fatec.runetasks.domain.model.enums.TaskStatus;
 import com.fatec.runetasks.domain.repository.SkillRepository;
 import com.fatec.runetasks.domain.repository.TaskRepository;
 import com.fatec.runetasks.domain.repository.UserRepository;
@@ -25,7 +29,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private TaskRepository taskRepository;
 
@@ -34,16 +38,16 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse convertToDTO(Task task) {
-        int coins = task.getTaskXP()/2;
+        int coins = task.getTaskXP() / 2;
 
         return new TaskResponse(
-            task.getId(),
-            task.getTitle(),
-            task.getDescription(),
-            task.getStatus(),
-            task.getTaskXP(),
-            coins,
-            task.getSkill().getName());
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus().name(),
+                task.getTaskXP(),
+                coins,
+                task.getSkill().getName());
     }
 
     @Override
@@ -58,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
     public boolean isFromSkill(Long taskId, Long skillId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
-        
+
         return task.getSkill().getId().equals(skillId);
     }
 
@@ -79,8 +83,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return tasks.stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -92,8 +96,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return tasks.stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -105,16 +109,16 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return tasks.stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     @Override
     public void createTask(TaskCreateRequest request, User user) {
         Skill skill = skillRepository.findByNameAndUser(request.getSkillName(), user)
-                .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));        
-        
+                .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
+
         int taskXP = switch (request.getDifficulty()) {
             case "medium" -> 30;
             case "hard" -> 50;
@@ -124,6 +128,8 @@ public class TaskServiceImpl implements TaskService {
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
+        task.setDate(request.getDate());
+        task.setRepeatType(RepeatType.valueOf(request.getRepeatType().toUpperCase()));
         task.setTaskXP(taskXP);
         task.setUser(user);
         task.setSkill(skill);
@@ -136,17 +142,43 @@ public class TaskServiceImpl implements TaskService {
     public void updateTaskById(Long id, TaskUpdateRequest request) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
-        
+
         switch (task.getStatus()) {
-            case "blocked" -> throw new LockedTaskException("Erro: Tarefa está bloqueada.");
-            case "completed" -> throw new LockedTaskException("Erro: Tarefa já foi completada.");
-            default -> {}
+            case BLOCKED -> throw new LockedTaskException("Erro: Tarefa está bloqueada.");
+            case COMPLETED -> throw new LockedTaskException("Erro: Tarefa já foi completada.");
+            default -> {
+            }
         }
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
+        task.setDate(request.getDate());
+        task.setRepeatType(RepeatType.valueOf(request.getRepeatType().toUpperCase()));
 
         taskRepository.save(task);
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void resetRecurringTasks() {
+        LocalDate now = LocalDate.now();
+        
+        List<Task> recurringTasks = taskRepository
+            .findByStatusAndRepeatType(TaskStatus.COMPLETED, RepeatType.NONE);
+
+        for (Task task : recurringTasks) {
+            if (task.getDate().isBefore(now)) {
+                switch (task.getRepeatType()) {
+                    case DAILY -> task.setDate(task.getDate().plusDays(1));
+                    case WEEKLY -> task.setDate(task.getDate().plusWeeks(1));
+                    case MONTHLY -> task.setDate(task.getDate().plusMonths(1));
+                    default -> task.getDate();
+                }
+                task.setStatus(TaskStatus.PENDING);
+
+                taskRepository.save(task);
+            }
+        }
     }
 
     @Transactional
@@ -154,13 +186,13 @@ public class TaskServiceImpl implements TaskService {
     public void toggleTaskBlock(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
-        
-        if (task.getStatus().equals("completed")) {
+
+        if (task.getStatus().equals(TaskStatus.COMPLETED)) {
             throw new LockedTaskException("Erro: Tarefa já foi completada.");
         }
-        
-        boolean block = task.getStatus().equals("blocked");
-        task.setStatus(block ? "pending" : "blocked");
+
+        boolean block = task.getStatus().equals(TaskStatus.BLOCKED);
+        task.setStatus(block ? TaskStatus.PENDING : TaskStatus.BLOCKED);
 
         taskRepository.save(task);
     }
@@ -174,14 +206,15 @@ public class TaskServiceImpl implements TaskService {
         Skill skill = task.getSkill();
 
         switch (task.getStatus()) {
-            case "completed" -> throw new LockedTaskException("Erro: Tarefa já foi completada.");
-            default -> {}
+            case COMPLETED -> throw new LockedTaskException("Erro: Tarefa já foi completada.");
+            default -> {
+            }
         }
 
         int taskXP = task.getTaskXP();
-        int taskCoins = taskXP/2;
-        
-        task.setStatus("completed");
+        int taskCoins = taskXP / 2;
+
+        task.setStatus(TaskStatus.COMPLETED);
 
         user.setTotalXP(user.getTotalXP() + taskXP);
         user.setProgressXP(user.getProgressXP() + taskXP);
@@ -212,16 +245,17 @@ public class TaskServiceImpl implements TaskService {
         skillRepository.save(skill);
         taskRepository.save(task);
     }
-    
+
     @Transactional
     @Override
     public void deleteTaskById(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
-        
+
         switch (task.getStatus()) {
-            case "blocked" -> throw new LockedTaskException("Erro: Tarefa está bloqueada.");
-            default -> {}
+            case BLOCKED -> throw new LockedTaskException("Erro: Tarefa está bloqueada.");
+            default -> {
+            }
         }
 
         taskRepository.delete(task);

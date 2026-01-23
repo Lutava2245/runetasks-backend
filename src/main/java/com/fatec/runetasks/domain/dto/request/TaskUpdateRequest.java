@@ -1,5 +1,7 @@
 package com.fatec.runetasks.domain.dto.request;
 
+import java.time.LocalDate;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -16,5 +18,11 @@ public class TaskUpdateRequest {
     @Valid
     @Size(min = 3, max = 255)
     private String description;
+
+    @Valid
+    private LocalDate date;
+
+    @Valid
+    private String repeatType;
 
 }
