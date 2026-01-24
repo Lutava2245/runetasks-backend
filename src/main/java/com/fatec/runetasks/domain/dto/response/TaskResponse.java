@@ -1,5 +1,7 @@
 package com.fatec.runetasks.domain.dto.response;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -20,5 +22,9 @@ public class TaskResponse {
     private int taskCoins;
 
     private String skillName;
+
+    private LocalDate date;
+
+    private String repeatType;
 
 }

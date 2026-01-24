@@ -47,7 +47,9 @@ public class TaskServiceImpl implements TaskService {
                 task.getStatus().name(),
                 task.getTaskXP(),
                 coins,
-                task.getSkill().getName());
+                task.getSkill().getName(),
+                task.getDate(),
+                task.getRepeatType().name());
     }
 
     @Override
@@ -162,9 +164,9 @@ public class TaskServiceImpl implements TaskService {
     @Scheduled(cron = "0 0 0 * * *")
     public void resetRecurringTasks() {
         LocalDate now = LocalDate.now();
-        
+
         List<Task> recurringTasks = taskRepository
-            .findByStatusAndRepeatType(TaskStatus.COMPLETED, RepeatType.NONE);
+                .findByStatusAndRepeatTypeNot(TaskStatus.COMPLETED, RepeatType.NONE);
 
         for (Task task : recurringTasks) {
             if (task.getDate().isBefore(now)) {

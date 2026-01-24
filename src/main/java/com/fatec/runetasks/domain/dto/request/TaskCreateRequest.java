@@ -29,6 +29,7 @@ public class TaskCreateRequest {
     private String skillName;
 
     @Valid
+    @NotNull
     private LocalDate date;
 
     @Valid
