@@ -1,5 +1,6 @@
 package com.fatec.runetasks.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,7 @@ public interface AvatarRepository extends JpaRepository<Avatar, Long> {
     Optional<Avatar> findByTitle(String name);
     
     Optional<Avatar> findByIconName(String name);
+
+    List<Avatar> findByPriceLessThanEqual(int price);
 
 }

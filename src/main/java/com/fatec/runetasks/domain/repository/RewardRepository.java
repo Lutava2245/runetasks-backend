@@ -12,4 +12,6 @@ public interface RewardRepository extends JpaRepository<Reward, Long> {
     
     List<Reward> findByUserId(Long id);
 
+    List<Reward> findByUserIdAndPriceLessThanEqual(Long id, int price);
+
 }

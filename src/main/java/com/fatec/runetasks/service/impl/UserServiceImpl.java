@@ -15,13 +15,11 @@ import com.fatec.runetasks.domain.dto.request.UserCreateRequest;
 import com.fatec.runetasks.domain.dto.request.UserUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.UserResponse;
 import com.fatec.runetasks.domain.model.Avatar;
+import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.Role;
 import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.User;
-import com.fatec.runetasks.domain.repository.AvatarRepository;
-import com.fatec.runetasks.domain.repository.RoleRepository;
-import com.fatec.runetasks.domain.repository.SkillRepository;
-import com.fatec.runetasks.domain.repository.UserRepository;
+import com.fatec.runetasks.domain.repository.*;
 import com.fatec.runetasks.exception.DuplicateResourceException;
 import com.fatec.runetasks.exception.InvalidPasswordException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
@@ -30,6 +28,9 @@ import com.fatec.runetasks.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private RewardRepository rewardRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -49,21 +50,43 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse convertToDTO(User user) {
         double levelPercentage = (user.getProgressXP() * 100) / user.getXpToNextLevel();
+        int unlockableItems = 0;
+        List<Avatar> avatars = avatarRepository.findByPriceLessThanEqual(user.getTotalCoins());
+        List<Reward> rewards = rewardRepository.findByUserIdAndPriceLessThanEqual(user.getId(), user.getTotalCoins());
+
+        for (Avatar avatar : avatars) {
+            boolean isOwned = false;
+            for (Avatar userAvatar : user.getOwnedAvatars()) {
+                if (userAvatar.getId() == avatar.getId()) {
+                    isOwned = true;
+                }
+            }
+            if (!isOwned) {
+                unlockableItems++;
+            }
+        }
+
+        for (Reward reward : rewards) {
+            if (!reward.isRedeemed()) {
+                unlockableItems++;
+            }
+        }
 
         return new UserResponse(
-            user.getId(),
-            user.getName(),
-            user.getNickname(),
-            user.getEmail(),
-            user.getCurrentAvatar().getIcon(),
-            user.getCurrentAvatar().getIconName(),
-            user.getLevel(),
-            user.getXpToNextLevel(),
-            levelPercentage,
-            user.getProgressXP(),
-            user.getTotalXP(),
-            user.getTotalCoins(),
-            user.getCreatedAt());
+                user.getId(),
+                user.getName(),
+                user.getNickname(),
+                user.getEmail(),
+                user.getCurrentAvatar().getIcon(),
+                user.getCurrentAvatar().getIconName(),
+                user.getLevel(),
+                user.getXpToNextLevel(),
+                levelPercentage,
+                user.getProgressXP(),
+                user.getTotalXP(),
+                user.getTotalCoins(),
+                unlockableItems,
+                user.getCreatedAt());
     }
 
     @Override
@@ -92,8 +115,8 @@ public class UserServiceImpl implements UserService {
         }
 
         return users.stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -137,7 +160,7 @@ public class UserServiceImpl implements UserService {
     public void changePassword(Long id, ChangePasswordRequest requestDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
-        
+
         if (!passwordEncoder.matches(user.getPassword(), requestDTO.getCurrentPassword())) {
             throw new InvalidPasswordException();
         }
@@ -145,7 +168,7 @@ public class UserServiceImpl implements UserService {
         if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
             throw new SamePasswordException();
         }
-        
+
         String newPassword = requestDTO.getNewPassword();
         user.setPassword(passwordEncoder.encode(newPassword));
 
@@ -157,7 +180,7 @@ public class UserServiceImpl implements UserService {
         for (Avatar userAvatar : user.getOwnedAvatars()) {
             if (userAvatar.getIconName().equals(avatarName)) {
                 Avatar avatar = avatarRepository.findByIconName(avatarName)
-                    .orElseThrow(() -> new ResourceNotFoundException("Erro: Nenhum avatar encontrado."));
+                        .orElseThrow(() -> new ResourceNotFoundException("Erro: Nenhum avatar encontrado."));
 
                 user.setCurrentAvatar(avatar);
                 userRepository.save(user);
@@ -175,5 +198,5 @@ public class UserServiceImpl implements UserService {
 
         userRepository.delete(user);
     }
-    
+
 }

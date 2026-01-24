@@ -33,6 +33,8 @@ public class UserResponse {
     
     private int totalCoins;
 
+    private int unlockableItems;
+
     private LocalDate createdAt;
     
 }
