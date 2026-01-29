@@ -1,5 +1,6 @@
 package com.fatec.runetasks.config;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -19,6 +20,7 @@ import com.fatec.runetasks.domain.model.Role;
 import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
+import com.fatec.runetasks.domain.model.enums.RepeatType;
 import com.fatec.runetasks.domain.repository.*;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 
@@ -26,13 +28,13 @@ import io.jsonwebtoken.lang.Collections;
 
 @Configuration
 public class DataLoader {
-    
+
     @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
     private AvatarRepository avatarRepository;
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -61,10 +63,10 @@ public class DataLoader {
 
         for (String roleName : requiredRoles) {
             if (roleRepository.findByName(roleName).isEmpty()) {
-                
+
                 Role role = new Role();
                 role.setName(roleName);
-                
+
                 roleRepository.save(role);
                 System.out.println("Role criado: " + roleName);
             }
@@ -86,7 +88,7 @@ public class DataLoader {
             avatarMap.put("lightning", "⚡");
             avatarMap.put("star", "🌟");
             avatarMap.put("dragon", "🐉");
-            
+
             avatarMap.forEach((name, icon) -> {
                 if (!avatarRepository.existsByIconName(name)) {
                     Avatar avatar = new Avatar();
@@ -146,8 +148,9 @@ public class DataLoader {
                             avatar.setPrice(0);
                             avatar.setTitle("Desconhecido");
                         }
-                    };
-                    
+                    }
+                    ;
+
                     avatar.setIconName(name);
                     avatarRepository.save(avatar);
                 }
@@ -167,31 +170,26 @@ public class DataLoader {
 
             Role adminRole = roleRepository.findByName("ROLE_ADMIN")
                     .orElseThrow(() -> new ResourceNotFoundException("Erro: ROLE_ADMIN não encontrado."));
-            
+
             Role userRole = roleRepository.findByName("ROLE_USER")
                     .orElseThrow(() -> new ResourceNotFoundException("Erro: ROLE_USER não encontrado."));
 
-            Avatar adminAvatar = new Avatar();
-            adminAvatar.setTitle("Administrador");
-            adminAvatar.setIconName("adm");
-            adminAvatar.setIcon("🧑‍💻");
+            Avatar initialAvatar = avatarRepository.findByIconName("person")
+                    .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar inicial não encontrado."));
 
             List<Avatar> adminAvatars = avatarRepository.findAll();
-            adminAvatars.add(adminAvatar);
 
             User admin = new User();
             admin.setEmail(ADMIN_EMAIL);
-            admin.setNickname("AdminRuneTasks"); 
+            admin.setNickname("AdminRuneTasks");
             admin.setName("Administrador Inicial");
             admin.setPassword(passwordEncoder.encode(initialPassword));
-            admin.setCurrentAvatar(adminAvatar);
+            admin.setCurrentAvatar(initialAvatar);
             admin.setOwnedAvatars(new HashSet<>(Collections.asSet(adminAvatars)));
 
             Set<Role> roles = new HashSet<>(Arrays.asList(adminRole, userRole));
             admin.setRoles(roles);
 
-            avatarRepository.save(adminAvatar);
-            System.out.println("Avatar do Admin criado com sucesso: " + adminAvatar.getIcon());
             userRepository.save(admin);
             System.out.println("Usuário Admin inicial criado com sucesso: " + ADMIN_EMAIL);
         }
@@ -201,9 +199,9 @@ public class DataLoader {
         User adminUser = userRepository.findByEmail("admin@runetasks.com")
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: ADM não encontrado."));
 
-        if (!skillRepository.existsByUser(adminUser)) {     
+        if (!skillRepository.existsByUser(adminUser)) {
             final String SKILL_NAME = "Habilidade do ADM";
-            
+
             Skill skill = new Skill();
             skill.setName(SKILL_NAME);
             skill.setIcon("code");
@@ -217,7 +215,7 @@ public class DataLoader {
     private void createAdminTask() {
         User adminUser = userRepository.findByEmail("admin@runetasks.com")
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: ADM não encontrado."));
-        
+
         List<Skill> adminSkills = skillRepository.findByUserId(adminUser.getId());
 
         if (adminSkills.isEmpty()) {
@@ -235,6 +233,8 @@ public class DataLoader {
             task.setTaskXP(50);
             task.setUser(adminUser);
             task.setSkill(adminSkill);
+            task.setDate(LocalDate.now());
+            task.setRepeatType(RepeatType.NONE);
 
             taskRepository.save(task);
             System.out.println("Tarefa de Admin inicial criada com sucesso: " + TASK_TITLE);
