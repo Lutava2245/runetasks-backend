@@ -23,7 +23,7 @@ import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.SkillService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("api/skills")
 public class SkillController {
     

@@ -26,7 +26,7 @@ import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.UserService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("api/users")
 public class UserController {
 
