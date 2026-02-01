@@ -38,17 +38,17 @@ public class SkillServiceImpl implements SkillService {
         int levelPercentage = (skill.getProgressXP() * 100) / skill.getXpToNextLevel();
 
         return new SkillResponse(
-            skill.getId(),
-            skill.getName(),
-            skill.getIcon(),
-            skill.getLevel(),
-            skill.getXpToNextLevel(),
-            levelPercentage,
-            skill.getProgressXP(),
-            skill.getTotalXP(),
-            tasks.size());
+                skill.getId(),
+                skill.getName(),
+                skill.getIcon(),
+                skill.getLevel(),
+                skill.getXpToNextLevel(),
+                levelPercentage,
+                skill.getProgressXP(),
+                skill.getTotalXP(),
+                tasks.size());
     }
-    
+
     @Override
     public boolean isOwner(Long skillId, Long userId) {
         Skill skill = skillRepository.findById(skillId)
@@ -121,7 +121,7 @@ public class SkillServiceImpl implements SkillService {
         Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
 
-        if (skillRepository.existsByNameAndUser(request.getName(), skill.getUser())) {
+        if (!skill.getName().equals(request.getName()) && skillRepository.existsByNameAndUser(request.getName(), skill.getUser())) {
             throw new DuplicateResourceException("Erro: Habilidade de mesmo nome já existente.");
         }
 
@@ -136,7 +136,8 @@ public class SkillServiceImpl implements SkillService {
     public void deleteSkillById(Long id) {
         Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
-
+        
+        taskRepository.findBySkillId(id).forEach(taskRepository::delete);
         skillRepository.delete(skill);
     }
 
