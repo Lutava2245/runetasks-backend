@@ -52,10 +52,6 @@ public class RewardServiceImpl implements RewardService {
     public List<RewardResponse> getAll() {
         List<Reward> rewards = rewardRepository.findAll();
 
-        if (rewards.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhuma recompensa encontrada.");
-        }
-
         return rewards.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -64,10 +60,6 @@ public class RewardServiceImpl implements RewardService {
     @Override
     public List<RewardResponse> getByUserId(Long id) {
         List<Reward> rewards = rewardRepository.findByUserId(id);
-
-        if (rewards.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhuma recompensa encontrada.");
-        }
 
         return rewards.stream()
                 .map(this::convertToDTO)

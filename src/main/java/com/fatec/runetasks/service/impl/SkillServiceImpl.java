@@ -79,10 +79,6 @@ public class SkillServiceImpl implements SkillService {
     public List<SkillResponse> getAll() {
         List<Skill> skills = skillRepository.findAll();
 
-        if (skills.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhuma habilidade encontrada.");
-        }
-
         return skills.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -91,10 +87,6 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public List<SkillResponse> getByUserId(Long id) {
         List<Skill> skills = skillRepository.findByUserId(id);
-
-        if (skills.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhuma habilidade encontrada.");
-        }
 
         return skills.stream()
                 .map(this::convertToDTO)

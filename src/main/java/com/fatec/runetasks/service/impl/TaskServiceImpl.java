@@ -12,11 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fatec.runetasks.domain.dto.request.TaskCreateRequest;
 import com.fatec.runetasks.domain.dto.request.TaskUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.TaskResponse;
+import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.model.enums.RepeatType;
+import com.fatec.runetasks.domain.model.enums.RewardStatus;
 import com.fatec.runetasks.domain.model.enums.TaskStatus;
+import com.fatec.runetasks.domain.repository.RewardRepository;
 import com.fatec.runetasks.domain.repository.SkillRepository;
 import com.fatec.runetasks.domain.repository.TaskRepository;
 import com.fatec.runetasks.domain.repository.UserRepository;
@@ -35,6 +38,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private SkillRepository skillRepository;
+
+    @Autowired
+    private RewardRepository rewardRepository;
 
     @Override
     public TaskResponse convertToDTO(Task task) {
@@ -80,10 +86,6 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskResponse> getAll() {
         List<Task> tasks = taskRepository.findAll();
 
-        if (tasks.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhuma tarefa encontrada.");
-        }
-
         return tasks.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -93,10 +95,6 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskResponse> getByUserId(Long id) {
         List<Task> tasks = taskRepository.findByUserId(id);
 
-        if (tasks.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhuma tarefa encontrada.");
-        }
-
         return tasks.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -105,10 +103,6 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponse> getBySkillId(Long id) {
         List<Task> tasks = taskRepository.findBySkillId(id);
-
-        if (tasks.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhuma tarefa encontrada.");
-        }
 
         return tasks.stream()
                 .map(this::convertToDTO)
@@ -242,6 +236,12 @@ public class TaskServiceImpl implements TaskService {
             skill.setLevel(skill.getLevel() + 1);
             skill.setXpToNextLevel(skill.getXpToNextLevel() + (20 * skill.getLevel()));
         }
+
+        List<Reward> rewards = rewardRepository.findByUserIdAndStatus(user.getId(), RewardStatus.AVAILABLE);
+        rewards.forEach(r -> {
+            r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
+            rewardRepository.save(r);
+        });
 
         userRepository.save(user);
         skillRepository.save(skill);

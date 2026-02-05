@@ -8,15 +8,12 @@ import com.fatec.runetasks.domain.dto.request.ChangePasswordRequest;
 import com.fatec.runetasks.domain.dto.request.UserCreateRequest;
 import com.fatec.runetasks.domain.dto.request.UserUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.UserResponse;
-import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.User;
 
 @Service
 public interface UserService {
 
     UserResponse convertToDTO(User user);
-
-    Skill createDefaultSkill(User user);
 
     UserResponse getById(Long id);
 

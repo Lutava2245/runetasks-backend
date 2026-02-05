@@ -17,8 +17,8 @@ import com.fatec.runetasks.domain.dto.response.UserResponse;
 import com.fatec.runetasks.domain.model.Avatar;
 import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.Role;
-import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.User;
+import com.fatec.runetasks.domain.model.enums.RewardStatus;
 import com.fatec.runetasks.domain.repository.*;
 import com.fatec.runetasks.exception.DuplicateResourceException;
 import com.fatec.runetasks.exception.InvalidPasswordException;
@@ -44,9 +44,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AvatarRepository avatarRepository;
 
-    @Autowired
-    private SkillRepository skillRepository;
-
     @Override
     public UserResponse convertToDTO(User user) {
         double levelPercentage = (user.getProgressXP() * 100) / user.getXpToNextLevel();
@@ -67,7 +64,7 @@ public class UserServiceImpl implements UserService {
         }
 
         for (Reward reward : rewards) {
-            if (!reward.isRedeemed()) {
+            if (reward.getStatus().equals(RewardStatus.REDEEMED)) {
                 unlockableItems++;
             }
         }
@@ -90,15 +87,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Skill createDefaultSkill(User user) {
-        Skill skill = new Skill();
-        skill.setName("Habilidade Inicial");
-        skill.setIcon("notes");
-        skill.setUser(user);
-        return skill;
-    }
-
-    @Override
     public UserResponse getById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
@@ -110,16 +98,11 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getAll() {
         List<User> users = userRepository.findAll();
 
-        if (users.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhum usuário encontrado.");
-        }
-
         return users.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public void createUser(UserCreateRequest request) {
         if (userRepository.existsByEmailOrNickname(request.getEmail(), request.getNickname())) {
@@ -142,7 +125,6 @@ public class UserServiceImpl implements UserService {
         user.setOwnedAvatars(new HashSet<>(Collections.singletonList(initialAvatar)));
 
         userRepository.save(user);
-        skillRepository.save(createDefaultSkill(user));
     }
 
     @Transactional

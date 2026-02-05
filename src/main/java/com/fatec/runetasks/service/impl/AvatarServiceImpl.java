@@ -28,20 +28,20 @@ public class AvatarServiceImpl implements AvatarService {
         boolean isOwned = isOwned(avatar.getTitle(), user.getId());
 
         return new AvatarResponse(
-            avatar.getId(),
-            avatar.getTitle(),
-            avatar.getIconName(),
-            avatar.getIcon(),
-            avatar.getPrice(),
-            isOwned);
+                avatar.getId(),
+                avatar.getTitle(),
+                avatar.getIconName(),
+                avatar.getIcon(),
+                avatar.getPrice(),
+                isOwned);
     }
 
     @Override
     public boolean isOwned(String name, Long userId) {
         Avatar avatar = avatarRepository.findByTitle(name)
-            .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar não encontrado."));
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
 
         boolean owned = false;
         for (Avatar userAvatar : user.getOwnedAvatars()) {
@@ -51,24 +51,11 @@ public class AvatarServiceImpl implements AvatarService {
         }
         return owned;
     }
-    
+
     @Override
     public List<AvatarResponse> getAllAvatars(User user) {
         List<Avatar> avatars = avatarRepository.findAll();
 
-        if (avatars.isEmpty()) {
-            throw new ResourceNotFoundException("Erro: Nenhum avatar encontrado.");
-        }
-
-        boolean isAdmin = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
-
-        if (!isAdmin) {
-            avatars = avatars.stream()
-                    .filter(avatar -> !avatar.getIconName().equals("adm"))
-                    .collect(Collectors.toList());
-        }
-        
         return avatars.stream()
                 .map(avatar -> convertAvatarToDTO(avatar, user))
                 .collect(Collectors.toList());
