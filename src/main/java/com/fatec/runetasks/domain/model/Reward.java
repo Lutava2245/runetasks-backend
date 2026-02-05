@@ -2,8 +2,12 @@ package com.fatec.runetasks.domain.model;
 
 import org.hibernate.annotations.Check;
 
+import com.fatec.runetasks.domain.model.enums.RewardStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,8 +39,8 @@ public class Reward {
     @Column(nullable = false)
     private int price;
 
-    @Column
-    private boolean redeemed = false;
+    @Enumerated(EnumType.STRING)
+    private RewardStatus status;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
