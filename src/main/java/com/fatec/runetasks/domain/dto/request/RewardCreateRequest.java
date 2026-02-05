@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class RewardRequest {
+public class RewardCreateRequest {
 
     @Valid
     @NotBlank
