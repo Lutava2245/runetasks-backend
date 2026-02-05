@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fatec.runetasks.domain.dto.request.RewardRequest;
+import com.fatec.runetasks.domain.dto.request.RewardCreateRequest;
 import com.fatec.runetasks.domain.dto.response.RewardResponse;
 import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.User;
+import com.fatec.runetasks.domain.model.enums.RewardStatus;
 import com.fatec.runetasks.domain.repository.RewardRepository;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.RewardService;
@@ -23,26 +24,19 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public RewardResponse convertToDTO(Reward reward) {
-        String status = "available";
-        if (reward.isRedeemed()) {
-            status = "claimed";
-        } else if (reward.getPrice() > reward.getUser().getTotalCoins()) {
-            status = "expensive";
-        }
-        
         return new RewardResponse(
-            reward.getId(),
-            reward.getTitle(),
-            reward.getDescription(),
-            reward.getPrice(),
-            status);
+                reward.getId(),
+                reward.getTitle(),
+                reward.getDescription(),
+                reward.getPrice(),
+                reward.getStatus().name());
     }
 
     @Override
     public boolean isOwner(Long rewardId, Long userId) {
         Reward reward = rewardRepository.findById(rewardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Recompensa não encontrada."));
-        
+
         return reward.getUser().getId().equals(userId);
     }
 
@@ -81,7 +75,7 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public void createReward(RewardRequest request, User user) {
+    public void createReward(RewardCreateRequest request, User user) {
         int price = switch (request.getLikeLevel()) {
             case 2 -> 50;
             case 3 -> 75;
@@ -89,11 +83,12 @@ public class RewardServiceImpl implements RewardService {
             case 5 -> 150;
             default -> 30;
         };
-        
+
         Reward reward = new Reward();
         reward.setTitle(request.getTitle());
         reward.setDescription(request.getDescription());
         reward.setPrice(price);
+        reward.setStatus(user.getTotalCoins() >= price ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
         reward.setUser(user);
 
         rewardRepository.save(reward);
@@ -101,10 +96,10 @@ public class RewardServiceImpl implements RewardService {
 
     @Transactional
     @Override
-    public void updateRewardById(Long id, RewardRequest request) {
+    public void updateRewardById(Long id, RewardCreateRequest request) {
         Reward reward = rewardRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Recompensa não encontrada."));
-        
+
         reward.setTitle(request.getTitle());
         reward.setDescription(null);
 
@@ -115,8 +110,8 @@ public class RewardServiceImpl implements RewardService {
     public void deleteRewardById(Long id) {
         Reward reward = rewardRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Recompensa não encontrada."));
-        
+
         rewardRepository.delete(reward);
     }
-    
+
 }

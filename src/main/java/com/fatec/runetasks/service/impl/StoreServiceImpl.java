@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fatec.runetasks.domain.model.Avatar;
 import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.User;
+import com.fatec.runetasks.domain.model.enums.RewardStatus;
 import com.fatec.runetasks.domain.repository.AvatarRepository;
 import com.fatec.runetasks.domain.repository.RewardRepository;
 import com.fatec.runetasks.domain.repository.UserRepository;
@@ -61,12 +62,12 @@ public class StoreServiceImpl implements StoreService {
         Reward reward = rewardRepository.findById(rewardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Recompensa não encontrada."));
         User user = reward.getUser();
-                
+
         if (user.getTotalCoins() < reward.getPrice()) {
             throw new InsufficientCoinsException();
         }
 
-        reward.setRedeemed(true);
+        reward.setStatus(RewardStatus.REDEEMED);
         user.setTotalCoins(user.getTotalCoins() - reward.getPrice());
 
         userRepository.save(user);
