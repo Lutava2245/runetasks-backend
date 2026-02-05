@@ -16,11 +16,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fatec.runetasks.domain.model.Avatar;
+import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.Role;
 import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.model.enums.RepeatType;
+import com.fatec.runetasks.domain.model.enums.RewardStatus;
 import com.fatec.runetasks.domain.repository.*;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 
@@ -45,6 +47,9 @@ public class DataLoader {
     private TaskRepository taskRepository;
 
     @Autowired
+    private RewardRepository rewardRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Bean
@@ -55,6 +60,7 @@ public class DataLoader {
             createInitialAdmin();
             createAdminSkill();
             createAdminTask();
+            createAdminReward();
         };
     }
 
@@ -204,7 +210,7 @@ public class DataLoader {
 
             Skill skill = new Skill();
             skill.setName(SKILL_NAME);
-            skill.setIcon("code");
+            skill.setIcon("personal");
             skill.setUser(adminUser);
 
             skillRepository.save(skill);
@@ -241,4 +247,21 @@ public class DataLoader {
         }
     }
 
+    private void createAdminReward() {
+        User adminUser = userRepository.findByEmail("admin@runetasks.com")
+                .orElseThrow(() -> new ResourceNotFoundException("Erro: ADM não encontrado."));
+        
+        final String REWARD_TITLE = "Recompensa do ADM";
+
+        if (rewardRepository.findByUserId(adminUser.getId()).isEmpty()) {
+            Reward reward = new Reward();
+            reward.setTitle(REWARD_TITLE);
+            reward.setUser(adminUser);
+            reward.setPrice(75);
+            reward.setStatus(adminUser.getTotalCoins() >= 75 ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
+            
+            rewardRepository.save(reward);
+            System.out.println("Recompensa de Admin inicial criada com sucesso: " + REWARD_TITLE);
+        }
+    }
 }
