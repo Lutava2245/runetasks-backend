@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
 
-        if (!passwordEncoder.matches(user.getPassword(), requestDTO.getCurrentPassword())) {
+        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
             throw new InvalidPasswordException();
         }
 
