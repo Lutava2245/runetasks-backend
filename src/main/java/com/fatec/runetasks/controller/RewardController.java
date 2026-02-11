@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fatec.runetasks.domain.dto.request.RewardCreateRequest;
+import com.fatec.runetasks.domain.dto.request.RewardUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.RewardResponse;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.RewardService;
@@ -60,7 +61,7 @@ public class RewardController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or @rewardServiceImpl.isOwner(#id, principal.id)")
-    public ResponseEntity<Void> editReward(@RequestBody RewardCreateRequest requestDTO, @PathVariable Long id) {
+    public ResponseEntity<Void> editReward(@RequestBody RewardUpdateRequest requestDTO, @PathVariable Long id) {
         rewardService.updateRewardById(id, requestDTO);
         return ResponseEntity.noContent().build();
     }

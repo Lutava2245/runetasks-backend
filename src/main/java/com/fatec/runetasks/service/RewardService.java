@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.fatec.runetasks.domain.dto.request.RewardCreateRequest;
+import com.fatec.runetasks.domain.dto.request.RewardUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.RewardResponse;
 import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.User;
@@ -24,7 +25,7 @@ public interface RewardService {
 
     void createReward(RewardCreateRequest request, User user);
 
-    void updateRewardById(Long id, RewardCreateRequest request);
+    void updateRewardById(Long id, RewardUpdateRequest request);
 
     void deleteRewardById(Long id);
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fatec.runetasks.domain.dto.request.RewardCreateRequest;
+import com.fatec.runetasks.domain.dto.request.RewardUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.RewardResponse;
 import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.User;
@@ -88,12 +89,12 @@ public class RewardServiceImpl implements RewardService {
 
     @Transactional
     @Override
-    public void updateRewardById(Long id, RewardCreateRequest request) {
+    public void updateRewardById(Long id, RewardUpdateRequest request) {
         Reward reward = rewardRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Recompensa não encontrada."));
 
         reward.setTitle(request.getTitle());
-        reward.setDescription(null);
+        reward.setDescription(request.getDescription());
 
         rewardRepository.save(reward);
     }
