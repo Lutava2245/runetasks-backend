@@ -1,5 +1,6 @@
 package com.fatec.runetasks.service.impl;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,14 @@ public class StoreServiceImpl implements StoreService {
         user.setTotalCoins(user.getTotalCoins() - avatar.getPrice());
         user.setOwnedAvatars(ownedAvatars);
 
+        List<Reward> rewards = rewardRepository.findByUserId(user.getId());
+        rewards.forEach(r -> {
+            if (!r.getStatus().equals(RewardStatus.REDEEMED)) {
+                r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
+                rewardRepository.save(r);
+            }
+        });
+
         userRepository.save(user);
     }
 
@@ -69,6 +78,14 @@ public class StoreServiceImpl implements StoreService {
 
         reward.setStatus(RewardStatus.REDEEMED);
         user.setTotalCoins(user.getTotalCoins() - reward.getPrice());
+
+        List<Reward> rewards = rewardRepository.findByUserId(user.getId());
+        rewards.forEach(r -> {
+            if (!r.getStatus().equals(RewardStatus.REDEEMED) && reward.equals(r)) {
+                r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
+                rewardRepository.save(r);
+            }
+        });
 
         userRepository.save(user);
         rewardRepository.save(reward);
