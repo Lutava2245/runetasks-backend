@@ -10,7 +10,7 @@ public class SamePasswordException extends ApiException {
 
     @Override
     public HttpStatus getStatus() {
-        return HttpStatus.BAD_REQUEST;
+        return HttpStatus.CONFLICT;
     }
 
 }

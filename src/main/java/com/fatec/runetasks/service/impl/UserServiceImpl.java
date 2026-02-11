@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
         }
 
         for (Reward reward : rewards) {
-            if (reward.getStatus().equals(RewardStatus.REDEEMED)) {
+            if (reward.getStatus().equals(RewardStatus.AVAILABLE)) {
                 unlockableItems++;
             }
         }

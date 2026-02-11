@@ -237,10 +237,12 @@ public class TaskServiceImpl implements TaskService {
             skill.setXpToNextLevel(skill.getXpToNextLevel() + (20 * skill.getLevel()));
         }
 
-        List<Reward> rewards = rewardRepository.findByUserIdAndStatus(user.getId(), RewardStatus.AVAILABLE);
+        List<Reward> rewards = rewardRepository.findByUserId(user.getId());
         rewards.forEach(r -> {
-            r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
-            rewardRepository.save(r);
+            if (!r.getStatus().equals(RewardStatus.REDEEMED)) {
+                r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
+                rewardRepository.save(r);
+            }
         });
 
         userRepository.save(user);
