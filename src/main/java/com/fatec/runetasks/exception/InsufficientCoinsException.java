@@ -10,7 +10,7 @@ public class InsufficientCoinsException extends ApiException {
 
     @Override
     public HttpStatus getStatus() {
-        return HttpStatus.LOCKED;
+        return HttpStatus.PRECONDITION_FAILED;
     }
-    
+
 }

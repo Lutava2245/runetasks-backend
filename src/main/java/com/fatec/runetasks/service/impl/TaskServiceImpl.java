@@ -23,6 +23,7 @@ import com.fatec.runetasks.domain.repository.RewardRepository;
 import com.fatec.runetasks.domain.repository.SkillRepository;
 import com.fatec.runetasks.domain.repository.TaskRepository;
 import com.fatec.runetasks.domain.repository.UserRepository;
+import com.fatec.runetasks.exception.DuplicatedResourceException;
 import com.fatec.runetasks.exception.LockedTaskException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.TaskService;
@@ -140,7 +141,7 @@ public class TaskServiceImpl implements TaskService {
 
         switch (task.getStatus()) {
             case BLOCKED -> throw new LockedTaskException("Erro: Tarefa está bloqueada.");
-            case COMPLETED -> throw new LockedTaskException("Erro: Tarefa já foi completada.");
+            case COMPLETED -> throw new DuplicatedResourceException("Erro: Tarefa já foi completada.");
             default -> {
             }
         }
@@ -184,7 +185,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
 
         if (task.getStatus().equals(TaskStatus.COMPLETED)) {
-            throw new LockedTaskException("Erro: Tarefa já foi completada.");
+            throw new DuplicatedResourceException("Erro: Tarefa já foi completada.");
         }
 
         boolean block = task.getStatus().equals(TaskStatus.BLOCKED);
@@ -202,7 +203,7 @@ public class TaskServiceImpl implements TaskService {
         Skill skill = task.getSkill();
 
         if (Objects.requireNonNull(task.getStatus()) == TaskStatus.COMPLETED) {
-            throw new LockedTaskException("Erro: Tarefa já foi completada.");
+            throw new DuplicatedResourceException("Erro: Tarefa já foi completada.");
         }
 
         int taskXP = task.getTaskXP();

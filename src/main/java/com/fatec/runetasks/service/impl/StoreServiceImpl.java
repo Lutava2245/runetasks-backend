@@ -44,7 +44,7 @@ public class StoreServiceImpl implements StoreService {
                 .anyMatch(userAvatar -> avatar.getIconName().equals(userAvatar.getIconName()));
 
         if (isOwned) {
-            throw new DuplicateResourceException("Erro: Recompensa já foi resgatada.");
+            throw new DuplicateResourceException("Erro: Avatar já foi comprado.");
         }
 
         Set<Avatar> ownedAvatars = user.getOwnedAvatars();
@@ -73,6 +73,12 @@ public class StoreServiceImpl implements StoreService {
 
         if (user.getTotalCoins() < reward.getPrice()) {
             throw new InsufficientCoinsException();
+        }
+
+        boolean isRedeemed = reward.getStatus().equals(RewardStatus.REDEEMED);
+
+        if (isRedeemed) {
+            throw new DuplicateResourceException("Erro: Recompensa já foi resgatada.");
         }
 
         reward.setStatus(RewardStatus.REDEEMED);
