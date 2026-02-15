@@ -3,7 +3,6 @@ package com.fatec.runetasks.service.impl;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +18,17 @@ import com.fatec.runetasks.exception.InsufficientCoinsException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.StoreService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class StoreServiceImpl implements StoreService {
 
-    @Autowired
-    private AvatarRepository avatarRepository;
+    private final AvatarRepository avatarRepository;
 
-    @Autowired
-    private RewardRepository rewardRepository;
+    private final RewardRepository rewardRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     @Override

@@ -2,7 +2,6 @@ package com.fatec.runetasks.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,20 +14,21 @@ import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.AvatarService;
 import com.fatec.runetasks.service.StoreService;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+@RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("api/store")
 public class StoreController {
 
-    @Autowired
-    private AvatarService avatarService;
+    private final AvatarService avatarService;
 
-    @Autowired
-    private StoreService storeService;
+    private final StoreService storeService;
 
     @GetMapping("avatars")
     @PreAuthorize("isAuthenticated()")
@@ -46,7 +46,7 @@ public class StoreController {
 
     @PatchMapping("buy/reward/{rewardId}")
     @PreAuthorize("isAuthenticated() || @rewardServiceImpl.isOwner(#rewardId, principal.id)")
-    public ResponseEntity<Void> claimReward(@AuthenticationPrincipal User user, @PathVariable Long rewardId) {
+    public ResponseEntity<Void> claimReward(@PathVariable Long rewardId) {
         storeService.claimReward(rewardId);
         return ResponseEntity.noContent().build();
     }

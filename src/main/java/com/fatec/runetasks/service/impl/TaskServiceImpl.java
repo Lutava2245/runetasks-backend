@@ -2,9 +2,9 @@ package com.fatec.runetasks.service.impl;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,20 +27,19 @@ import com.fatec.runetasks.exception.LockedTaskException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.TaskService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
-    @Autowired
-    private SkillRepository skillRepository;
+    private final SkillRepository skillRepository;
 
-    @Autowired
-    private RewardRepository rewardRepository;
+    private final RewardRepository rewardRepository;
 
     @Override
     public TaskResponse convertToDTO(Task task) {
@@ -168,7 +167,8 @@ public class TaskServiceImpl implements TaskService {
                     case DAILY -> task.setDate(task.getDate().plusDays(1));
                     case WEEKLY -> task.setDate(task.getDate().plusWeeks(1));
                     case MONTHLY -> task.setDate(task.getDate().plusMonths(1));
-                    default -> task.getDate();
+                    case NONE -> {
+                    }
                 }
                 task.setStatus(TaskStatus.PENDING);
 
@@ -201,10 +201,8 @@ public class TaskServiceImpl implements TaskService {
         User user = task.getUser();
         Skill skill = task.getSkill();
 
-        switch (task.getStatus()) {
-            case COMPLETED -> throw new LockedTaskException("Erro: Tarefa já foi completada.");
-            default -> {
-            }
+        if (Objects.requireNonNull(task.getStatus()) == TaskStatus.COMPLETED) {
+            throw new LockedTaskException("Erro: Tarefa já foi completada.");
         }
 
         int taskXP = task.getTaskXP();
@@ -256,10 +254,8 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
 
-        switch (task.getStatus()) {
-            case BLOCKED -> throw new LockedTaskException("Erro: Tarefa está bloqueada.");
-            default -> {
-            }
+        if (Objects.requireNonNull(task.getStatus()) == TaskStatus.BLOCKED) {
+            throw new LockedTaskException("Erro: Tarefa está bloqueada.");
         }
 
         taskRepository.delete(task);

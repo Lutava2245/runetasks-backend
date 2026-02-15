@@ -1,9 +1,9 @@
 package com.fatec.runetasks.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fatec.runetasks.domain.dto.response.AvatarResponse;
@@ -14,14 +14,15 @@ import com.fatec.runetasks.domain.repository.UserRepository;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.AvatarService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class AvatarServiceImpl implements AvatarService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private AvatarRepository avatarRepository;
+    private final AvatarRepository avatarRepository;
 
     @Override
     public AvatarResponse convertAvatarToDTO(Avatar avatar, User user) {
@@ -45,8 +46,9 @@ public class AvatarServiceImpl implements AvatarService {
 
         boolean owned = false;
         for (Avatar userAvatar : user.getOwnedAvatars()) {
-            if (userAvatar.getId() == avatar.getId()) {
+            if (Objects.equals(userAvatar.getId(), avatar.getId())) {
                 owned = true;
+                break;
             }
         }
         return owned;

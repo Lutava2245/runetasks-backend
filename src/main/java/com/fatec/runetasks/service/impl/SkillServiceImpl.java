@@ -3,7 +3,6 @@ package com.fatec.runetasks.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +18,17 @@ import com.fatec.runetasks.exception.DuplicateResourceException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.SkillService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class SkillServiceImpl implements SkillService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private SkillRepository skillRepository;
+    private final SkillRepository skillRepository;
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     @Override
     public SkillResponse convertToDTO(Skill skill) {
@@ -128,8 +127,8 @@ public class SkillServiceImpl implements SkillService {
     public void deleteSkillById(Long id) {
         Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
-        
-        taskRepository.findBySkillId(id).forEach(taskRepository::delete);
+
+        taskRepository.deleteAll(taskRepository.findBySkillId(id));
         skillRepository.delete(skill);
     }
 

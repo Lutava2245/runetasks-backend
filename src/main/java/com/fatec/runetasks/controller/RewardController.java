@@ -2,7 +2,6 @@ package com.fatec.runetasks.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,13 +22,15 @@ import com.fatec.runetasks.domain.dto.response.RewardResponse;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.RewardService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins ="*", maxAge = 3600)
 @RequestMapping("api/rewards")
 public class RewardController {
 
-    @Autowired
-    private RewardService rewardService;
+    private final RewardService rewardService;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")

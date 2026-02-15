@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,30 +26,25 @@ import com.fatec.runetasks.domain.repository.*;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 
 import io.jsonwebtoken.lang.Collections;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Configuration
 public class DataLoader {
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private AvatarRepository avatarRepository;
+    private final AvatarRepository avatarRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private SkillRepository skillRepository;
+    private final SkillRepository skillRepository;
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
-    @Autowired
-    private RewardRepository rewardRepository;
+    private final RewardRepository rewardRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     CommandLineRunner initData() {
@@ -155,7 +149,6 @@ public class DataLoader {
                             avatar.setTitle("Desconhecido");
                         }
                     }
-                    ;
 
                     avatar.setIconName(name);
                     avatarRepository.save(avatar);
@@ -166,7 +159,7 @@ public class DataLoader {
     }
 
     @Transactional
-    private void createInitialAdmin() {
+    protected void createInitialAdmin() {
         final String ADMIN_EMAIL = "admin@runetasks.com";
 
         if (!userRepository.existsByEmail(ADMIN_EMAIL)) {

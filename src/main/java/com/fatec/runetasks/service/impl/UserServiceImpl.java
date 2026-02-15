@@ -3,9 +3,9 @@ package com.fatec.runetasks.service.impl;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,27 +26,25 @@ import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.exception.SamePasswordException;
 import com.fatec.runetasks.service.UserService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private RewardRepository rewardRepository;
+    private final RewardRepository rewardRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private AvatarRepository avatarRepository;
+    private final AvatarRepository avatarRepository;
 
     @Override
     public UserResponse convertToDTO(User user) {
-        double levelPercentage = (user.getProgressXP() * 100) / user.getXpToNextLevel();
+        double levelPercentage = (double) (user.getProgressXP() * 100) / user.getXpToNextLevel();
         int unlockableItems = 0;
         List<Avatar> avatars = avatarRepository.findByPriceLessThanEqual(user.getTotalCoins());
         List<Reward> rewards = rewardRepository.findByUserIdAndPriceLessThanEqual(user.getId(), user.getTotalCoins());
@@ -54,8 +52,9 @@ public class UserServiceImpl implements UserService {
         for (Avatar avatar : avatars) {
             boolean isOwned = false;
             for (Avatar userAvatar : user.getOwnedAvatars()) {
-                if (userAvatar.getId() == avatar.getId()) {
+                if (Objects.equals(userAvatar.getId(), avatar.getId())) {
                     isOwned = true;
+                    break;
                 }
             }
             if (!isOwned) {
