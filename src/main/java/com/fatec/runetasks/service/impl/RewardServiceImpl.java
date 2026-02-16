@@ -3,6 +3,7 @@ package com.fatec.runetasks.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.model.enums.RewardStatus;
 import com.fatec.runetasks.domain.repository.RewardRepository;
+import com.fatec.runetasks.event.UserBalanceChangedEvent;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.RewardService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,21 @@ public class RewardServiceImpl implements RewardService {
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Recompensa não encontrada."));
 
         return reward.getUser().getId().equals(userId);
+    }
+
+    @EventListener
+    @Override
+    public void handleBalanceChange(UserBalanceChangedEvent event) {
+        User user = event.user();
+        
+        List<Reward> rewards = rewardRepository.findByUserId(user.getId());
+        rewards.stream()
+            .filter(r -> r.getStatus() != RewardStatus.REDEEMED)
+            .forEach(r -> {
+                r.setStatus(user.getTotalCoins() >= r.getPrice() ? 
+                           RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
+            });
+        rewardRepository.saveAll(rewards);
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.fatec.runetasks.domain.dto.request.RewardUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.RewardResponse;
 import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.User;
+import com.fatec.runetasks.event.UserBalanceChangedEvent;
 
 @Service
 public interface RewardService {
@@ -16,6 +17,8 @@ public interface RewardService {
     RewardResponse convertToDTO(Reward reward);
 
     boolean isOwner(Long rewardId, Long userId);
+
+    void handleBalanceChange(UserBalanceChangedEvent event);
 
     RewardResponse getById(Long id);
 
