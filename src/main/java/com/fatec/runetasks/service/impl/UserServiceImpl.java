@@ -24,6 +24,7 @@ import com.fatec.runetasks.exception.DuplicateResourceException;
 import com.fatec.runetasks.exception.InvalidPasswordException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.exception.SamePasswordException;
+import com.fatec.runetasks.exception.WeakPasswordException;
 import com.fatec.runetasks.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -86,6 +87,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void verifyPasswordStrength(String password) {
+        if (password.length() < 8) {
+            throw new WeakPasswordException();
+        }
+
+        boolean hasUppercase = false;
+        boolean hasLowercase = false;
+        boolean hasDigit = false;
+
+        for (char c : password.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                hasUppercase = true;
+            } else if (Character.isLowerCase(c)) {
+                hasLowercase = true;
+            } else if (Character.isDigit(c)) {
+                hasDigit = true;
+            }
+        }
+
+        if (!hasUppercase || !hasLowercase || !hasDigit) {
+            throw new WeakPasswordException();
+        }
+    }
+
+    @Override
     public UserResponse getById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
@@ -107,6 +133,8 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmailOrNickname(request.getEmail(), request.getNickname())) {
             throw new DuplicateResourceException("Erro: Email/Nickname já existentes.");
         }
+
+        verifyPasswordStrength(request.getPassword());
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         Role userRole = roleRepository.findByName("ROLE_USER")
@@ -138,19 +166,21 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void changePassword(Long id, ChangePasswordRequest requestDTO) {
+    public void changePassword(Long id, ChangePasswordRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
 
-        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new InvalidPasswordException();
         }
 
-        if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
             throw new SamePasswordException();
         }
 
-        String newPassword = requestDTO.getNewPassword();
+        verifyPasswordStrength(request.getNewPassword());
+
+        String newPassword = request.getNewPassword();
         user.setPassword(passwordEncoder.encode(newPassword));
 
         userRepository.save(user);

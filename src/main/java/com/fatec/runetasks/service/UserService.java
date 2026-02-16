@@ -15,15 +15,17 @@ public interface UserService {
 
     UserResponse convertToDTO(User user);
 
+    void verifyPasswordStrength(String password);
+
     UserResponse getById(Long id);
 
     List<UserResponse> getAll();
 
-    void createUser(UserCreateRequest requestDTO);
+    void createUser(UserCreateRequest request);
 
-    void updateUserById(Long id, UserUpdateRequest requestDTO);
+    void updateUserById(Long id, UserUpdateRequest request);
 
-    void changePassword(Long id, ChangePasswordRequest requestDTO);
+    void changePassword(Long id, ChangePasswordRequest request);
 
     void selectAvatar(User user, String avatarName);
 
