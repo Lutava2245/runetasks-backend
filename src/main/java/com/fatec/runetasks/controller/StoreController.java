@@ -14,16 +14,21 @@ import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.AvatarService;
 import com.fatec.runetasks.service.StoreService;
 
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("api/store")
+@Tag(name = "Loja", description = "Endpoints relacionados ao sistema de loja")
 public class StoreController {
 
     private final AvatarService avatarService;
@@ -32,6 +37,11 @@ public class StoreController {
 
     @GetMapping("avatars")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Listar todos os avatares", description = "Retorna uma lista de todos os avatares da loja")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Avatares listados com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
     public ResponseEntity<List<AvatarResponse>> getAllAvatars(@AuthenticationPrincipal User user) {
         List<AvatarResponse> avatarsResponse = avatarService.getAllAvatars(user);
         return ResponseEntity.ok(avatarsResponse);
@@ -39,6 +49,14 @@ public class StoreController {
 
     @PatchMapping("buy/avatar/{avatarId}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Comprar avatar", description = "Desbloqueia um avatar para o usuário autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Avatar comprado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Avatar não encontrado"),
+            @ApiResponse(responseCode = "409", description = "Avatar já comprado"),
+            @ApiResponse(responseCode = "412", description = "Saldo insuficiente")
+    })
     public ResponseEntity<Void> buyAvatar(@AuthenticationPrincipal User user, @PathVariable Long avatarId) {
         storeService.buyAvatar(user, avatarId);
         return ResponseEntity.noContent().build();
@@ -46,6 +64,14 @@ public class StoreController {
 
     @PatchMapping("buy/reward/{rewardId}")
     @PreAuthorize("isAuthenticated() || @rewardServiceImpl.isOwner(#rewardId, principal.id)")
+    @Operation(summary = "Reivindicar recompensa", description = "Reivindica uma recompensa para o usuário autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Recompensa reivindicada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Recompensa não encontrada"),
+            @ApiResponse(responseCode = "409", description = "Recompensa já reivindicada"),
+            @ApiResponse(responseCode = "412", description = "Saldo insuficiente")
+    })
     public ResponseEntity<Void> claimReward(@PathVariable Long rewardId) {
         storeService.claimReward(rewardId);
         return ResponseEntity.noContent().build();
