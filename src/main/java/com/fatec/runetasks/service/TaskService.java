@@ -31,6 +31,8 @@ public interface TaskService {
 
     void updateTaskById(Long id, TaskUpdateRequest request);
 
+    void resetRecurringTasks();
+
     void toggleTaskBlock(Long id);
 
     void markTaskAsComplete(Long id);

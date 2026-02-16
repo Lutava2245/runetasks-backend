@@ -152,26 +152,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
+    @Override
     public void resetRecurringTasks() {
-        LocalDate now = LocalDate.now();
-
-        List<Task> recurringTasks = taskRepository
-                .findByStatusAndRepeatTypeNot(TaskStatus.COMPLETED, RepeatType.NONE);
+        List<Task> recurringTasks = taskRepository.findByRepeatTypeNotAndDateBefore(RepeatType.NONE, LocalDate.now());
 
         for (Task task : recurringTasks) {
-            if (task.getDate().isBefore(now)) {
-                switch (task.getRepeatType()) {
-                    case DAILY -> task.setDate(task.getDate().plusDays(1));
-                    case WEEKLY -> task.setDate(task.getDate().plusWeeks(1));
-                    case MONTHLY -> task.setDate(task.getDate().plusMonths(1));
-                    case NONE -> {
-                    }
-                }
-                task.setStatus(TaskStatus.PENDING);
-
-                taskRepository.save(task);
+            if (task.getStatus().equals(TaskStatus.COMPLETED)) {
+                task.prepareNextOccurrence();
             }
         }
+
+        taskRepository.saveAll(recurringTasks);
     }
 
     @Transactional

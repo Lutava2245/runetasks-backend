@@ -44,7 +44,7 @@ public class Task {
 
     @Column
     private int taskXP;
-    
+
     @Column
     private LocalDate date;
 
@@ -58,5 +58,19 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "skill_id", nullable = false)
     private Skill skill;
-    
+
+    public void prepareNextOccurrence() {
+        if (this.repeatType == RepeatType.NONE) {
+            return;
+        }
+
+        this.date = switch (this.repeatType) {
+            case DAILY -> this.date.plusDays(1);
+            case WEEKLY -> this.date.plusWeeks(1);
+            case MONTHLY -> this.date.plusMonths(1);
+            default -> this.date;
+        };
+
+        this.status = TaskStatus.PENDING;
+    }
 }

@@ -1,5 +1,6 @@
 package com.fatec.runetasks.domain.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,7 +11,6 @@ import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.model.enums.RepeatType;
-import com.fatec.runetasks.domain.model.enums.TaskStatus;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -25,6 +25,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByUserId(Long id);
 
-    List<Task> findByStatusAndRepeatTypeNot(TaskStatus status, RepeatType repeatType);
+    List<Task> findByRepeatTypeNotAndDateBefore(RepeatType repeatType, LocalDate date);
 
 }
