@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,18 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fatec.runetasks.domain.dto.request.TaskCreateRequest;
 import com.fatec.runetasks.domain.dto.request.TaskUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.TaskResponse;
-import com.fatec.runetasks.domain.model.Reward;
 import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.model.enums.RepeatType;
-import com.fatec.runetasks.domain.model.enums.RewardStatus;
 import com.fatec.runetasks.domain.model.enums.TaskStatus;
-import com.fatec.runetasks.domain.repository.RewardRepository;
 import com.fatec.runetasks.domain.repository.SkillRepository;
 import com.fatec.runetasks.domain.repository.TaskRepository;
-import com.fatec.runetasks.domain.repository.UserRepository;
-import com.fatec.runetasks.exception.DuplicatedResourceException;
+import com.fatec.runetasks.event.UserBalanceChangedEvent;
+import com.fatec.runetasks.exception.DuplicateResourceException;
 import com.fatec.runetasks.exception.LockedTaskException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.TaskService;
@@ -34,13 +32,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final TaskRepository taskRepository;
 
     private final SkillRepository skillRepository;
-
-    private final RewardRepository rewardRepository;
 
     @Override
     public TaskResponse convertToDTO(Task task) {
@@ -141,7 +137,7 @@ public class TaskServiceImpl implements TaskService {
 
         switch (task.getStatus()) {
             case BLOCKED -> throw new LockedTaskException("Erro: Tarefa está bloqueada.");
-            case COMPLETED -> throw new DuplicatedResourceException("Erro: Tarefa já foi completada.");
+            case COMPLETED -> throw new DuplicateResourceException("Erro: Tarefa já foi completada.");
             default -> {
             }
         }
@@ -185,7 +181,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
 
         if (task.getStatus().equals(TaskStatus.COMPLETED)) {
-            throw new DuplicatedResourceException("Erro: Tarefa já foi completada.");
+            throw new DuplicateResourceException("Erro: Tarefa já foi completada.");
         }
 
         boolean block = task.getStatus().equals(TaskStatus.BLOCKED);
@@ -199,53 +195,21 @@ public class TaskServiceImpl implements TaskService {
     public void markTaskAsComplete(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
+
+        if (Objects.requireNonNull(task.getStatus()) == TaskStatus.COMPLETED) {
+            throw new DuplicateResourceException("Erro: Tarefa já foi completada.");
+        }
+
         User user = task.getUser();
         Skill skill = task.getSkill();
 
-        if (Objects.requireNonNull(task.getStatus()) == TaskStatus.COMPLETED) {
-            throw new DuplicatedResourceException("Erro: Tarefa já foi completada.");
-        }
-
-        int taskXP = task.getTaskXP();
-        int taskCoins = taskXP / 2;
-
         task.setStatus(TaskStatus.COMPLETED);
+        user.addXP(task.getTaskXP());
+        user.addCoins(task.getTaskXP() / 2);
+        skill.addXP(task.getTaskXP());
 
-        user.setTotalXP(user.getTotalXP() + taskXP);
-        user.setProgressXP(user.getProgressXP() + taskXP);
-        user.setTotalCoins(user.getTotalCoins() + taskCoins);
-        if (user.getProgressXP() >= user.getXpToNextLevel()) {
-            if (user.getProgressXP() > user.getXpToNextLevel()) {
-                user.setProgressXP(user.getProgressXP() - user.getXpToNextLevel());
-            } else {
-                user.setProgressXP(0);
-            }
-            user.setLevel(user.getLevel() + 1);
-            user.setXpToNextLevel(user.getXpToNextLevel() + (30 * user.getLevel()));
-        }
+        eventPublisher.publishEvent(new UserBalanceChangedEvent(user));
 
-        skill.setTotalXP(skill.getTotalXP() + taskXP);
-        skill.setProgressXP(skill.getProgressXP() + taskXP);
-        if (skill.getProgressXP() >= skill.getXpToNextLevel()) {
-            if (skill.getProgressXP() > skill.getXpToNextLevel()) {
-                skill.setProgressXP(skill.getProgressXP() - skill.getXpToNextLevel());
-            } else {
-                skill.setProgressXP(0);
-            }
-            skill.setLevel(skill.getLevel() + 1);
-            skill.setXpToNextLevel(skill.getXpToNextLevel() + (20 * skill.getLevel()));
-        }
-
-        List<Reward> rewards = rewardRepository.findByUserId(user.getId());
-        rewards.forEach(r -> {
-            if (!r.getStatus().equals(RewardStatus.REDEEMED)) {
-                r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
-                rewardRepository.save(r);
-            }
-        });
-
-        userRepository.save(user);
-        skillRepository.save(skill);
         taskRepository.save(task);
     }
 

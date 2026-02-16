@@ -18,7 +18,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "skills")
 public class Skill {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,4 +45,14 @@ public class Skill {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    public void addXP(int xp) {
+        this.totalXP += xp;
+        this.progressXP += xp;
+
+        while (this.progressXP >= this.xpToNextLevel) {
+            this.progressXP -= this.xpToNextLevel;
+            this.level++;
+            this.xpToNextLevel += (20 * this.level);
+        }
+    }
 }

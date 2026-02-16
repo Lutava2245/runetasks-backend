@@ -92,6 +92,21 @@ public class User implements UserDetails {
         return this.email;
     }
 
+    public void addXP(int xp) {
+        this.totalXP += xp;
+        this.progressXP += xp;
+
+        while (this.progressXP >= this.xpToNextLevel) {
+            this.progressXP -= this.xpToNextLevel;
+            this.level++;
+            this.xpToNextLevel += (30 * this.level);
+        }
+    }
+
+    public void addCoins(int amount) {
+        this.totalCoins += amount;
+    }
+
     public void spendCoins(int amount) {
         if (this.totalCoins < amount) {
             throw new InsufficientCoinsException(); // Criamos uma exceção específica
