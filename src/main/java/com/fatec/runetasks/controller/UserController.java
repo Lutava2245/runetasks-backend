@@ -84,8 +84,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Role/Avatar não encontrado"),
             @ApiResponse(responseCode = "409", description = "Username já cadastrado")
     })
-    public ResponseEntity<Void> registerUser(@RequestBody UserCreateRequest request) {
-        userService.createUser(request);
+    public ResponseEntity<Void> registerUser(@RequestBody UserCreateRequest requestDTO) {
+        userService.createUser(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -98,8 +98,8 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<Void> editUser(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
-        userService.updateUserById(id, request);
+    public ResponseEntity<Void> editUser(@PathVariable Long id, @RequestBody UserUpdateRequest requestDTO) {
+        userService.updateUserById(id, requestDTO);
         return ResponseEntity.noContent().build();
     }
 
@@ -112,8 +112,8 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<Void> changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequest request) {
-        userService.changePassword(id, request);
+    public ResponseEntity<Void> changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequest requestDTO) {
+        userService.changePassword(id, requestDTO);
         return ResponseEntity.noContent().build();
     }
 

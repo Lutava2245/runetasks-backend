@@ -95,9 +95,9 @@ public class TaskController {
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Habilidade não encontrada")
     })
-    public ResponseEntity<Void> registerTask(@RequestBody TaskCreateRequest request,
+    public ResponseEntity<Void> registerTask(@RequestBody TaskCreateRequest requestDTO,
             @AuthenticationPrincipal User user) {
-        taskService.createTask(request, user);
+        taskService.createTask(requestDTO, user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -111,8 +111,8 @@ public class TaskController {
             @ApiResponse(responseCode = "409", description = "Tarefa já foi completada"),
             @ApiResponse(responseCode = "412", description = "Tarefa bloqueada")
     })
-    public ResponseEntity<Void> editTask(@PathVariable Long id, @RequestBody TaskUpdateRequest request) {
-        taskService.updateTaskById(id, request);
+    public ResponseEntity<Void> editTask(@PathVariable Long id, @RequestBody TaskUpdateRequest requestDTO) {
+        taskService.updateTaskById(id, requestDTO);
         return ResponseEntity.noContent().build();
     }
 
