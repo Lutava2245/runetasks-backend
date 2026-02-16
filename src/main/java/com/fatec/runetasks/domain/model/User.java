@@ -9,6 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fatec.runetasks.exception.DuplicateResourceException;
+import com.fatec.runetasks.exception.InsufficientCoinsException;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -70,19 +73,11 @@ public class User implements UserDetails {
     private LocalDate createdAt = LocalDate.now();
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_avatars",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "avatar_id")
-    )
+    @JoinTable(name = "user_avatars", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "avatar_id"))
     private Set<Avatar> ownedAvatars;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
     @Override
@@ -95,6 +90,25 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return this.email;
+    }
+
+    public void spendCoins(int amount) {
+        if (this.totalCoins < amount) {
+            throw new InsufficientCoinsException(); // Criamos uma exceção específica
+        }
+        this.totalCoins -= amount;
+    }
+
+    public boolean hasAvatar(Avatar avatar) {
+        return this.ownedAvatars.stream()
+                .anyMatch(a -> a.getIconName().equals(avatar.getIconName()));
+    }
+
+    public void addAvatar(Avatar avatar) {
+        if (hasAvatar(avatar)) {
+            throw new DuplicateResourceException("Você já possui este avatar.");
+        }
+        this.ownedAvatars.add(avatar);
     }
 
 }

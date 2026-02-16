@@ -1,8 +1,6 @@
 package com.fatec.runetasks.service.impl;
 
-import java.util.List;
-import java.util.Set;
-
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,8 +11,8 @@ import com.fatec.runetasks.domain.model.enums.RewardStatus;
 import com.fatec.runetasks.domain.repository.AvatarRepository;
 import com.fatec.runetasks.domain.repository.RewardRepository;
 import com.fatec.runetasks.domain.repository.UserRepository;
+import com.fatec.runetasks.event.UserBalanceChangedEvent;
 import com.fatec.runetasks.exception.DuplicateResourceException;
-import com.fatec.runetasks.exception.InsufficientCoinsException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.StoreService;
 
@@ -23,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class StoreServiceImpl implements StoreService {
+
+    private final ApplicationEventPublisher eventPublisher;
 
     private final AvatarRepository avatarRepository;
 
@@ -36,30 +36,10 @@ public class StoreServiceImpl implements StoreService {
         Avatar avatar = avatarRepository.findById(avatarId)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Nenhum avatar encontrado."));
 
-        if (user.getTotalCoins() < avatar.getPrice()) {
-            throw new InsufficientCoinsException();
-        }
+        user.spendCoins(avatar.getPrice());
+        user.addAvatar(avatar);
 
-        boolean isOwned = user.getOwnedAvatars().stream()
-                .anyMatch(userAvatar -> avatar.getIconName().equals(userAvatar.getIconName()));
-
-        if (isOwned) {
-            throw new DuplicateResourceException("Erro: Avatar já foi comprado.");
-        }
-
-        Set<Avatar> ownedAvatars = user.getOwnedAvatars();
-        ownedAvatars.add(avatar);
-
-        user.setTotalCoins(user.getTotalCoins() - avatar.getPrice());
-        user.setOwnedAvatars(ownedAvatars);
-
-        List<Reward> rewards = rewardRepository.findByUserId(user.getId());
-        rewards.forEach(r -> {
-            if (!r.getStatus().equals(RewardStatus.REDEEMED)) {
-                r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
-                rewardRepository.save(r);
-            }
-        });
+        eventPublisher.publishEvent(new UserBalanceChangedEvent(user));
 
         userRepository.save(user);
     }
@@ -71,26 +51,14 @@ public class StoreServiceImpl implements StoreService {
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Recompensa não encontrada."));
         User user = reward.getUser();
 
-        if (user.getTotalCoins() < reward.getPrice()) {
-            throw new InsufficientCoinsException();
-        }
-
-        boolean isRedeemed = reward.getStatus().equals(RewardStatus.REDEEMED);
-
-        if (isRedeemed) {
+        if (reward.getStatus().equals(RewardStatus.REDEEMED)) {
             throw new DuplicateResourceException("Erro: Recompensa já foi resgatada.");
         }
 
+        user.spendCoins(reward.getPrice());
         reward.setStatus(RewardStatus.REDEEMED);
-        user.setTotalCoins(user.getTotalCoins() - reward.getPrice());
 
-        List<Reward> rewards = rewardRepository.findByUserId(user.getId());
-        rewards.forEach(r -> {
-            if (!r.getStatus().equals(RewardStatus.REDEEMED) && reward.equals(r)) {
-                r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
-                rewardRepository.save(r);
-            }
-        });
+        eventPublisher.publishEvent(new UserBalanceChangedEvent(user));
 
         userRepository.save(user);
         rewardRepository.save(reward);
