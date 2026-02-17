@@ -10,22 +10,32 @@
 	</parent>
 	<groupId>com.fatec</groupId>
 	<artifactId>runetasks</artifactId>
-	<version>1.2.1-SNAPSHOT</version>
+	<version>1.2.2-SNAPSHOT</version>
 	<name>runetasks</name>
-	<description>Projeto de gerenciamento de tarefas diárias</description>
-	<url/>
+	<description>Sistema gameficado de gerenciamento de tarefas com recompensas e pontuações</description>
+	<url>https://github.com/Lutava2245/runetasks-backend</url>
 	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>Lutava2245</id>
+            <name>Luan T. Felix</name>
+            <email>lutavares.bros@gmail.com</email>
+            <organization>Fatec Praia Grande</organization>
+            <roles>
+                <role>Lead Developer</role>
+                <role>Backend Architect</role>
+            </roles>
+            <timezone>America/Sao_Paulo</timezone>
+        </developer>
+    </developers>
+
 	<properties>
 		<java.version>21</java.version>
 	</properties>
