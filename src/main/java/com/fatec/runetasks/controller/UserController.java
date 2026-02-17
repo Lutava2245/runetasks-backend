@@ -93,7 +93,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     @Operation(summary = "Editar usuário", description = "Atualiza os dados de um usuário existente")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário editado com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Usuário editado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
@@ -110,7 +110,8 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "Senha alterada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "409", description = "Nova senha é idêntica a anterior")
     })
     public ResponseEntity<Void> changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequest requestDTO) {
         userService.changePassword(id, requestDTO);
