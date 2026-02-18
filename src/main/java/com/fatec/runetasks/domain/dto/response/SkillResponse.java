@@ -19,9 +19,9 @@ public class SkillResponse {
 
     private double levelPercentage;
 
-    private int progressXP;
+    private int progressXp;
     
-    private int totalXP;
+    private int totalXp;
 
     private int totalTasks;
 

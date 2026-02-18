@@ -17,7 +17,7 @@ public class TaskResponse {
 
     private String status;
 
-    private int taskXP;
+    private int taskXp;
 
     private int taskCoins;
 

@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, length = 50, unique = true)
@@ -47,7 +47,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, length = 254, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @ManyToOne
@@ -55,7 +55,7 @@ public class User implements UserDetails {
     private Avatar currentAvatar;
 
     @Column
-    private int totalXP = 0;
+    private int totalXp = 0;
 
     @Column
     private int totalCoins = 0;
@@ -64,7 +64,7 @@ public class User implements UserDetails {
     private int level = 1;
 
     @Column
-    private int progressXP = 0;
+    private int progressXp = 0;
 
     @Column
     private int xpToNextLevel = 150;
@@ -92,34 +92,34 @@ public class User implements UserDetails {
         return this.email;
     }
 
-    public void addXP(int xp) {
-        this.totalXP += xp;
-        this.progressXP += xp;
+    public void addXp(final int xp) {
+        this.totalXp += xp;
+        this.progressXp += xp;
 
-        while (this.progressXP >= this.xpToNextLevel) {
-            this.progressXP -= this.xpToNextLevel;
+        while (this.progressXp >= this.xpToNextLevel) {
+            this.progressXp -= this.xpToNextLevel;
             this.level++;
             this.xpToNextLevel += (30 * this.level);
         }
     }
 
-    public void addCoins(int amount) {
+    public void addCoins(final int amount) {
         this.totalCoins += amount;
     }
 
-    public void spendCoins(int amount) {
+    public void spendCoins(final int amount) {
         if (this.totalCoins < amount) {
-            throw new InsufficientCoinsException(); // Criamos uma exceção específica
+            throw new InsufficientCoinsException();
         }
         this.totalCoins -= amount;
     }
 
-    public boolean hasAvatar(Avatar avatar) {
+    public boolean hasAvatar(final Avatar avatar) {
         return this.ownedAvatars.stream()
-                .anyMatch(a -> a.getIconName().equals(avatar.getIconName()));
+                .anyMatch(a -> a.getIcon().equals(avatar.getIcon()));
     }
 
-    public void addAvatar(Avatar avatar) {
+    public void addAvatar(final Avatar avatar) {
         if (hasAvatar(avatar)) {
             throw new DuplicateResourceException("Você já possui este avatar.");
         }

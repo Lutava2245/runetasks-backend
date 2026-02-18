@@ -109,13 +109,13 @@ public class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Deve subir o nível do usuário quando o XP ultrapassar o limite")
+    @DisplayName("Deve subir o nível do usuário quando o Xp ultrapassar o limite")
     void markTaskAsComplete_UserLevel() {
         User user = new User();
-        user.setProgressXP(120);
+        user.setProgressXp(120);
 
         Task task = new Task();
-        task.setTaskXP(50);
+        task.setTaskXp(50);
         task.setUser(user);
         task.setSkill(new Skill());
 
@@ -124,7 +124,7 @@ public class TaskServiceTest {
         taskService.markTaskAsComplete(1L);
 
         assertEquals(2, user.getLevel());
-        assertEquals(20, user.getProgressXP());
+        assertEquals(20, user.getProgressXp());
         assertEquals(TaskStatus.COMPLETED, task.getStatus());
     }
 
@@ -132,10 +132,10 @@ public class TaskServiceTest {
     @DisplayName("Deve subir o nível da habilidade quando o XP ultrapassar o limite")
     void markTaskAsComplete_SkillLevel() {
         Skill skill = new Skill();
-        skill.setProgressXP(50);
+        skill.setProgressXp(50);
 
         Task task = new Task();
-        task.setTaskXP(50);
+        task.setTaskXp(50);
         task.setUser(new User());
         task.setSkill(skill);
 
@@ -144,7 +144,7 @@ public class TaskServiceTest {
         taskService.markTaskAsComplete(1L);
 
         assertEquals(2, skill.getLevel());
-        assertEquals(10, skill.getProgressXP());
+        assertEquals(10, skill.getProgressXp());
         assertEquals(TaskStatus.COMPLETED, task.getStatus());
     }
 

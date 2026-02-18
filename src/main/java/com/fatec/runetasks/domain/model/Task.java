@@ -26,7 +26,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "tasks")
-@Check(constraints = "taskXP IN (20, 30, 50)")
+@Check(constraints = "task_xp IN (20, 30, 50)")
 public class Task {
 
     @Id
@@ -43,10 +43,10 @@ public class Task {
     private TaskStatus status = TaskStatus.PENDING;
 
     @Column
-    private int taskXP;
+    private int taskXp = 0;
 
     @Column
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
     private RepeatType repeatType;

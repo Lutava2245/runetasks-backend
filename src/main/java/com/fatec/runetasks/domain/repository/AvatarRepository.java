@@ -11,11 +11,11 @@ import com.fatec.runetasks.domain.model.Avatar;
 @Repository
 public interface AvatarRepository extends JpaRepository<Avatar, Long> {
 
-    boolean existsByIconName(String name);
+    boolean existsByIcon(String icon);
 
-    Optional<Avatar> findByTitle(String name);
+    Optional<Avatar> findByTitle(String title);
     
-    Optional<Avatar> findByIconName(String name);
+    Optional<Avatar> findByIcon(String icon);
 
     List<Avatar> findByPriceLessThanEqual(int price);
 

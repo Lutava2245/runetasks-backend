@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse convertToDTO(User user) {
-        double levelPercentage = (double) (user.getProgressXP() * 100) / user.getXpToNextLevel();
+        double levelPercentage = (double) (user.getProgressXp() * 100) / user.getXpToNextLevel();
         int unlockableItems = 0;
         List<Avatar> avatars = avatarRepository.findByPriceLessThanEqual(user.getTotalCoins());
         List<Reward> rewards = rewardRepository.findByUserIdAndPriceLessThanEqual(user.getId(), user.getTotalCoins());
@@ -75,12 +75,12 @@ public class UserServiceImpl implements UserService {
                 user.getNickname(),
                 user.getEmail(),
                 user.getCurrentAvatar().getIcon(),
-                user.getCurrentAvatar().getIconName(),
+                user.getCurrentAvatar().getIcon(),
                 user.getLevel(),
                 user.getXpToNextLevel(),
                 levelPercentage,
-                user.getProgressXP(),
-                user.getTotalXP(),
+                user.getProgressXp(),
+                user.getTotalXp(),
                 user.getTotalCoins(),
                 unlockableItems,
                 user.getCreatedAt());
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Role padrão não encontrado."));
-        Avatar initialAvatar = avatarRepository.findByIconName("person")
+        Avatar initialAvatar = avatarRepository.findByIcon("person")
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar inicial não encontrado."));
 
         User user = new User();
@@ -189,8 +189,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void selectAvatar(User user, String avatarName) {
         for (Avatar userAvatar : user.getOwnedAvatars()) {
-            if (userAvatar.getIconName().equals(avatarName)) {
-                Avatar avatar = avatarRepository.findByIconName(avatarName)
+            if (userAvatar.getIcon().equals(avatarName)) {
+                Avatar avatar = avatarRepository.findByIcon(avatarName)
                         .orElseThrow(() -> new ResourceNotFoundException("Erro: Nenhum avatar encontrado."));
 
                 user.setCurrentAvatar(avatar);

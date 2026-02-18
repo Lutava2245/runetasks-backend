@@ -21,16 +21,13 @@ public class Avatar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String icon;
 
     @Column(nullable = false)
-    private String iconName;
-
-    @Column
     private int price;
 
 }

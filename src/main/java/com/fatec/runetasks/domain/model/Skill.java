@@ -30,13 +30,13 @@ public class Skill {
     private String icon;
 
     @Column
-    private int totalXP = 0;
+    private int totalXp = 0;
 
     @Column
     private int level = 1;
 
     @Column
-    private int progressXP;
+    private int progressXp = 0;
 
     @Column
     private int xpToNextLevel = 90;
@@ -45,12 +45,12 @@ public class Skill {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public void addXP(int xp) {
-        this.totalXP += xp;
-        this.progressXP += xp;
+    public void addXp(final int xp) {
+        this.totalXp += xp;
+        this.progressXp += xp;
 
-        while (this.progressXP >= this.xpToNextLevel) {
-            this.progressXP -= this.xpToNextLevel;
+        while (this.progressXp >= this.xpToNextLevel) {
+            this.progressXp -= this.xpToNextLevel;
             this.level++;
             this.xpToNextLevel += (20 * this.level);
         }

@@ -40,14 +40,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse convertToDTO(Task task) {
-        int coins = task.getTaskXP() / 2;
+        int coins = task.getTaskXp() / 2;
 
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getStatus().name(),
-                task.getTaskXP(),
+                task.getTaskXp(),
                 coins,
                 task.getSkill().getName(),
                 task.getDate(),
@@ -111,7 +111,7 @@ public class TaskServiceImpl implements TaskService {
         Skill skill = skillRepository.findByNameAndUser(request.getSkillName(), user)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
 
-        int taskXP = switch (request.getDifficulty()) {
+        int taskXp = switch (request.getDifficulty()) {
             case "medium" -> 30;
             case "hard" -> 50;
             default -> 20;
@@ -122,7 +122,7 @@ public class TaskServiceImpl implements TaskService {
         task.setDescription(request.getDescription());
         task.setDate(request.getDate());
         task.setRepeatType(RepeatType.valueOf(request.getRepeatType().toUpperCase()));
-        task.setTaskXP(taskXP);
+        task.setTaskXp(taskXp);
         task.setUser(user);
         task.setSkill(skill);
 
@@ -195,9 +195,9 @@ public class TaskServiceImpl implements TaskService {
         Skill skill = task.getSkill();
 
         task.setStatus(TaskStatus.COMPLETED);
-        user.addXP(task.getTaskXP());
-        user.addCoins(task.getTaskXP() / 2);
-        skill.addXP(task.getTaskXP());
+        user.addXp(task.getTaskXp());
+        user.addCoins(task.getTaskXp() / 2);
+        skill.addXp(task.getTaskXp());
 
         eventPublisher.publishEvent(new UserBalanceChangedEvent(user));
 

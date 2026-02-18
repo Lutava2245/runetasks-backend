@@ -34,7 +34,7 @@ public class SkillServiceImpl implements SkillService {
     public SkillResponse convertToDTO(Skill skill) {
         List<Task> tasks = taskRepository.findBySkillId(skill.getId());
 
-        int levelPercentage = (skill.getProgressXP() * 100) / skill.getXpToNextLevel();
+        int levelPercentage = (skill.getProgressXp() * 100) / skill.getXpToNextLevel();
 
         return new SkillResponse(
                 skill.getId(),
@@ -43,8 +43,8 @@ public class SkillServiceImpl implements SkillService {
                 skill.getLevel(),
                 skill.getXpToNextLevel(),
                 levelPercentage,
-                skill.getProgressXP(),
-                skill.getTotalXP(),
+                skill.getProgressXp(),
+                skill.getTotalXp(),
                 tasks.size());
     }
 

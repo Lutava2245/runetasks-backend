@@ -31,7 +31,6 @@ public class AvatarServiceImpl implements AvatarService {
         return new AvatarResponse(
                 avatar.getId(),
                 avatar.getTitle(),
-                avatar.getIconName(),
                 avatar.getIcon(),
                 avatar.getPrice(),
                 isOwned);

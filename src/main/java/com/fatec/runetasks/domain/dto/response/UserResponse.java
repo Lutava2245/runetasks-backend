@@ -27,9 +27,9 @@ public class UserResponse {
 
     private double levelPercentage;
 
-    private double progressXP;
+    private double progressXp;
 
-    private int totalXP;
+    private int totalXp;
     
     private int totalCoins;
 

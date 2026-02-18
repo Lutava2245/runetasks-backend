@@ -11,8 +11,6 @@ public class AvatarResponse {
 
     private String title;
 
-    private String iconName;
-
     private String icon;
 
     private int price;
