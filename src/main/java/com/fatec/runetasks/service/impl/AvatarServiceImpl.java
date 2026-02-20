@@ -10,8 +10,6 @@ import com.fatec.runetasks.domain.dto.response.AvatarResponse;
 import com.fatec.runetasks.domain.model.Avatar;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.repository.AvatarRepository;
-import com.fatec.runetasks.domain.repository.UserRepository;
-import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.AvatarService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,13 +18,17 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class AvatarServiceImpl implements AvatarService {
 
-    private final UserRepository userRepository;
-
     private final AvatarRepository avatarRepository;
 
     @Override
     public AvatarResponse convertAvatarToDTO(Avatar avatar, User user) {
-        boolean isOwned = isOwned(avatar.getTitle(), user.getId());
+        boolean isOwned = false;
+        for (Avatar userAvatar : user.getOwnedAvatars()) {
+            if (Objects.equals(userAvatar.getId(), avatar.getId())) {
+                isOwned = true;
+                break;
+            }
+        }
 
         return new AvatarResponse(
                 avatar.getId(),
@@ -34,23 +36,6 @@ public class AvatarServiceImpl implements AvatarService {
                 avatar.getIcon(),
                 avatar.getPrice(),
                 isOwned);
-    }
-
-    @Override
-    public boolean isOwned(String name, Long userId) {
-        Avatar avatar = avatarRepository.findByTitle(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar não encontrado."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
-
-        boolean owned = false;
-        for (Avatar userAvatar : user.getOwnedAvatars()) {
-            if (Objects.equals(userAvatar.getId(), avatar.getId())) {
-                owned = true;
-                break;
-            }
-        }
-        return owned;
     }
 
     @Override

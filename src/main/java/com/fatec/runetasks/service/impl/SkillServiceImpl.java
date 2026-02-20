@@ -13,7 +13,6 @@ import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.repository.SkillRepository;
 import com.fatec.runetasks.domain.repository.TaskRepository;
-import com.fatec.runetasks.domain.repository.UserRepository;
 import com.fatec.runetasks.exception.DuplicateResourceException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.SkillService;
@@ -23,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class SkillServiceImpl implements SkillService {
-
-    private final UserRepository userRepository;
 
     private final SkillRepository skillRepository;
 
@@ -51,16 +48,6 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public boolean isOwner(Long skillId, Long userId) {
         Skill skill = skillRepository.findById(skillId)
-                .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
-
-        return skill.getUser().getId().equals(userId);
-    }
-
-    @Override
-    public boolean isOwnerByName(String skillName, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
-        Skill skill = skillRepository.findByNameAndUser(skillName, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
 
         return skill.getUser().getId().equals(userId);

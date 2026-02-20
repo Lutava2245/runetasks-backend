@@ -10,10 +10,8 @@ import com.fatec.runetasks.domain.model.User;
 
 @Service
 public interface AvatarService {
-    
-    AvatarResponse convertAvatarToDTO(Avatar avatar, User user);
 
-    boolean isOwned(String name, Long userId);
+    AvatarResponse convertAvatarToDTO(Avatar avatar, User user);
 
     List<AvatarResponse> getAllAvatars(User user);
 
