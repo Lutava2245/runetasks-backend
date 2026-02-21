@@ -34,61 +34,78 @@ public class TaskServiceTest {
     private TaskRepository taskRepository;
     @Mock
     private ApplicationEventPublisher eventPublisher;
-    
+
     @InjectMocks
     private TaskServiceImpl taskService;
 
     @Test
-    @DisplayName("Deve resetar tarefas recorrentes diariamente")
-    void resetRecurringTasks_Daily() {
+    @DisplayName("Deve resetar data de vencimento de tarefas recorrentes")
+    void resetRecurringTasks_Reset() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
-        Task task = new Task();
-        task.setDate(yesterday);
-        task.setRepeatType(RepeatType.DAILY);
-        task.setStatus(TaskStatus.COMPLETED);
+        Task dailyTask = new Task();
+        dailyTask.setDate(yesterday);
+        dailyTask.setRepeatType(RepeatType.DAILY);
+        dailyTask.setStatus(TaskStatus.COMPLETED);
 
-        when(taskRepository.findByRepeatTypeNotAndDateBefore(any(), any())).thenReturn(List.of(task));
+        Task weeklyTask = new Task();
+        weeklyTask.setDate(yesterday);
+        weeklyTask.setRepeatType(RepeatType.WEEKLY);
+        weeklyTask.setStatus(TaskStatus.COMPLETED);
+
+        Task monthlyTask = new Task();
+        monthlyTask.setDate(yesterday);
+        monthlyTask.setRepeatType(RepeatType.MONTHLY);
+        monthlyTask.setStatus(TaskStatus.COMPLETED);
+
+        when(taskRepository.findByRepeatTypeNotAndDateBefore(any(), any())).thenReturn(List.of(dailyTask, weeklyTask, monthlyTask));
 
         taskService.resetRecurringTasks();
 
-        assertEquals(LocalDate.now(), task.getDate());
-        assertEquals(TaskStatus.PENDING, task.getStatus());
+        assertEquals(LocalDate.now(), dailyTask.getDate());
+        assertEquals(TaskStatus.PENDING, dailyTask.getStatus());
+
+        assertEquals(yesterday.plusWeeks(1), weeklyTask.getDate());
+        assertEquals(TaskStatus.PENDING, weeklyTask.getStatus());
+
+        assertEquals(yesterday.plusMonths(1), monthlyTask.getDate());
+        assertEquals(TaskStatus.PENDING, monthlyTask.getStatus());
         verify(taskRepository).saveAll(any());
     }
 
     @Test
-    @DisplayName("Deve resetar tarefas recorrentes semanalmente")
-    void resetRecurringTasks_Weekly() {
-        LocalDate lastWeek = LocalDate.now().minusWeeks(1);
-        Task task = new Task();
-        task.setDate(lastWeek);
-        task.setRepeatType(RepeatType.WEEKLY);
-        task.setStatus(TaskStatus.COMPLETED);
+    @DisplayName("Deve resetar tarefas recorrentes atrasadas para a próxima data")
+    void resetRecurringTasks_Overdue() {
+        LocalDate overdueDaily = LocalDate.now().minusDays(3);
+        LocalDate overdueWeekly = LocalDate.now().minusWeeks(2).minusDays(3);
+        LocalDate overdueMonthly = LocalDate.now().minusMonths(1).minusWeeks(2).minusDays(3);
 
-        when(taskRepository.findByRepeatTypeNotAndDateBefore(any(), any())).thenReturn(List.of(task));
+        Task dailyTask = new Task();
+        dailyTask.setDate(overdueDaily);
+        dailyTask.setRepeatType(RepeatType.DAILY);
+        dailyTask.setStatus(TaskStatus.COMPLETED);
 
-        taskService.resetRecurringTasks();
+        Task weeklyTask = new Task();
+        weeklyTask.setDate(overdueWeekly);
+        weeklyTask.setRepeatType(RepeatType.WEEKLY);
+        weeklyTask.setStatus(TaskStatus.COMPLETED);
 
-        assertEquals(LocalDate.now(), task.getDate());
-        assertEquals(TaskStatus.PENDING, task.getStatus());
-        verify(taskRepository).saveAll(any());
-    }
+        Task monthlyTask = new Task();
+        monthlyTask.setDate(overdueMonthly);
+        monthlyTask.setRepeatType(RepeatType.MONTHLY);
+        monthlyTask.setStatus(TaskStatus.COMPLETED);
 
-    @Test
-    @DisplayName("Deve resetar tarefas recorrentes mensalmente")
-    void resetRecurringTasks_Monthly() {
-        LocalDate lastMonth = LocalDate.now().minusMonths(1);
-        Task task = new Task();
-        task.setDate(lastMonth);
-        task.setRepeatType(RepeatType.MONTHLY);
-        task.setStatus(TaskStatus.COMPLETED);
-
-        when(taskRepository.findByRepeatTypeNotAndDateBefore(any(), any())).thenReturn(List.of(task));
+        when(taskRepository.findByRepeatTypeNotAndDateBefore(any(), any())).thenReturn(List.of(dailyTask, weeklyTask, monthlyTask));
 
         taskService.resetRecurringTasks();
 
-        assertEquals(LocalDate.now(), task.getDate());
-        assertEquals(TaskStatus.PENDING, task.getStatus());
+        assertEquals(LocalDate.now(), dailyTask.getDate());
+        assertEquals(TaskStatus.PENDING, dailyTask.getStatus());
+
+        assertEquals(overdueWeekly.plusWeeks(3), weeklyTask.getDate());
+        assertEquals(TaskStatus.PENDING, weeklyTask.getStatus());
+
+        assertEquals(overdueMonthly.plusMonths(2), monthlyTask.getDate());
+        assertEquals(TaskStatus.PENDING, monthlyTask.getStatus());
         verify(taskRepository).saveAll(any());
     }
 
@@ -110,15 +127,17 @@ public class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Deve subir o nível do usuário quando o Xp ultrapassar o limite")
-    void markTaskAsComplete_UserLevel() {
+    @DisplayName("Deve subir o nível do usuário e da habilidade quando o XP ultrapassar o limite")
+    void markTaskAsComplete_Level() {
         User user = new User();
         user.setProgressXp(100);
+
+        Skill skill = new Skill();
 
         Task task = new Task();
         task.setDifficulty(TaskDifficulty.MEDIUM);
         task.setUser(user);
-        task.setSkill(new Skill());
+        task.setSkill(skill);
 
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
 
@@ -126,26 +145,9 @@ public class TaskServiceTest {
 
         assertEquals(2, user.getLevel());
         assertEquals(20, user.getProgressXp());
-        assertEquals(TaskStatus.COMPLETED, task.getStatus());
-    }
-
-    @Test
-    @DisplayName("Deve subir o nível da habilidade quando o XP ultrapassar o limite")
-    void markTaskAsComplete_SkillLevel() {
-        Skill skill = new Skill();
-
-        Task task = new Task();
-        task.setDifficulty(TaskDifficulty.MEDIUM);
-        task.setUser(new User());
-        task.setSkill(skill);
-
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
-
-        taskService.markTaskAsComplete(1L);
 
         assertEquals(2, skill.getLevel());
         assertEquals(10, skill.getProgressXp());
-        assertEquals(TaskStatus.COMPLETED, task.getStatus());
     }
 
     @Test

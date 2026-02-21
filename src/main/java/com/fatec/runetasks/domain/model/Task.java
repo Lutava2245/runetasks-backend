@@ -142,13 +142,24 @@ public class Task {
             return;
         }
 
-        this.date = switch (this.repeatType) {
-            case DAILY -> this.date.plusDays(1);
-            case WEEKLY -> this.date.plusWeeks(1);
-            case MONTHLY -> this.date.plusMonths(1);
-            default -> this.date;
+        LocalDate nextDate = this.date;
+
+        switch (this.repeatType) {
+            case DAILY -> nextDate = LocalDate.now();
+            case WEEKLY -> {
+                while (nextDate.isBefore(LocalDate.now())) {
+                    nextDate = nextDate.plusWeeks(1);
+                }
+            }
+            case MONTHLY -> {
+                while (nextDate.isBefore(LocalDate.now())) {
+                    nextDate = nextDate.plusMonths(1);
+                }
+            }
+            default -> {}
         };
 
+        this.date = nextDate;
         this.status = TaskStatus.PENDING;
     }
 }
