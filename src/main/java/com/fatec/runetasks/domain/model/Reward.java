@@ -16,6 +16,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Representa uma recompensa que pode ser criada pelo {@link User} e resgatada
+ * por ele
+ * <p>
+ * Uma recompensa é um item que serve para ser trocado por moedas após a
+ * conclusão de tarefas.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @Getter
 @Setter
 @ToString
@@ -23,22 +33,40 @@ import lombok.ToString;
 @Table(name = "rewards")
 public class Reward {
 
+    /**
+     * Identificador único da recompensa.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Título da recompensa.
+     */
     @Column(nullable = false, length = 100)
     private String title;
 
+    /**
+     * Descrição da recompensa.
+     */
     @Column
     private String description;
 
+    /**
+     * Preço da recompensa.
+     */
     @Column(nullable = false)
     private int price;
 
+    /**
+     * Status da recompensa.
+     */
     @Enumerated(EnumType.STRING)
     private RewardStatus status;
 
+    /**
+     * Usuário que criou a recompensa.
+     */
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

@@ -27,6 +27,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Representa um usuário do sistema.
+ * <p>
+ * Um usuário é uma pessoa que pode criar tarefas, recompensas e habilidades,
+ * utilizar avatares, ganhar moedas e subir de nível.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @Getter
 @Setter
 @ToString
@@ -34,49 +43,93 @@ import lombok.ToString;
 @Table(name = "users")
 public class User implements UserDetails {
 
+    /**
+     * Identificador único do usuário.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Nome do usuário.
+     */
     @Column(nullable = false)
     private String name;
 
+    /**
+     * Nickname do usuário.
+     */
     @Column(nullable = false, length = 50, unique = true)
     private String nickname;
 
+    /**
+     * Senha do usuário.
+     */
     @Column(nullable = false)
     private String password;
 
+    /**
+     * Email do usuário.
+     */
     @Column(nullable = false, unique = true)
     private String email;
 
+    /**
+     * Avatar atual do usuário.
+     */
     @ManyToOne
     @JoinColumn(name = "avatar_id", nullable = false)
     private Avatar currentAvatar;
 
+    /**
+     * Total de pontos de experiência do usuário.
+     */
     @Column
     private int totalXp = 0;
 
+    /**
+     * Total de moedas do usuário.
+     */
     @Column
     private int totalCoins = 0;
 
+    /**
+     * Nível do usuário.
+     */
     @Column
     private int level = 1;
 
+    /**
+     * Pontos de experiência do usuário.
+     */
     @Column
     private int progressXp = 0;
 
+    /**
+     * Data de criação do usuário.
+     */
     @Column
     private LocalDate createdAt = LocalDate.now();
 
+    /**
+     * Avatares que o usuário possui.
+     */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_avatars", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "avatar_id"))
     private Set<Avatar> ownedAvatars;
 
+    /**
+     * Papéis do usuário.
+     */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    /**
+     * Retorna as autoridades do usuário derivadas dos seus papéis.
+     * 
+     * @return Coleção de autoridades do usuário.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
@@ -84,15 +137,40 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retorna o <code>username</code> do usuário utilizado para autenticação.
+     * <p>
+     * O <code>username</code> é o email do usuário.
+     * <p>
+     * 
+     * @return Email do usuário.
+     */
     @Override
     public String getUsername() {
         return this.email;
     }
 
+    /**
+     * Retorna o total de XP necessário para atingir o pŕoximo nível.
+     * <p>
+     * O XP necessário é calculado de acordo com o nível atual do usuário.
+     * <p>
+     * 
+     * @return um <code>int</code> do total de XP para subir de nível
+     */
     public int getXpToNextLevel() {
         return 30 + (90 * level);
     }
 
+    /**
+     * Adiciona pontos de experiência ao usuário.
+     * <p>
+     * Se o usuário atingir o nível máximo, os pontos de experiência são
+     * resetados e o nível é incrementado.
+     * <p>
+     * 
+     * @param xp Pontos de experiência a serem adicionados.
+     */
     public void addXp(final int xp) {
         this.totalXp += xp;
         this.progressXp += xp;
@@ -103,10 +181,24 @@ public class User implements UserDetails {
         }
     }
 
+    /**
+     * Adiciona moedas ao usuário.
+     * 
+     * @param amount Moedas a serem adicionadas.
+     */
     public void addCoins(final int amount) {
         this.totalCoins += amount;
     }
 
+    /**
+     * Remove moedas do usuário.
+     * <p>
+     * Se o usuário não tiver moedas suficientes, lança uma
+     * {@link InsufficientCoinsException}.
+     * <p>
+     * 
+     * @param amount Moedas a serem removidas.
+     */
     public void spendCoins(final int amount) {
         if (this.totalCoins < amount) {
             throw new InsufficientCoinsException();
@@ -114,11 +206,27 @@ public class User implements UserDetails {
         this.totalCoins -= amount;
     }
 
+    /**
+     * Verifica se o usuário possui um avatar.
+     * 
+     * @param avatar Avatar a ser verificado.
+     * @return <code>true</code> se o usuário possui o avatar, <code>false</code>
+     *         caso contrário.
+     */
     public boolean hasAvatar(final Avatar avatar) {
         return this.ownedAvatars.stream()
                 .anyMatch(a -> a.getIcon().equals(avatar.getIcon()));
     }
 
+    /**
+     * Adiciona um avatar ao usuário.
+     * <p>
+     * Se o usuário já possuir o avatar, lança uma
+     * {@link DuplicateResourceException}.
+     * <p>
+     * 
+     * @param avatar Avatar a ser adicionado.
+     */
     public void addAvatar(final Avatar avatar) {
         if (hasAvatar(avatar)) {
             throw new DuplicateResourceException("Você já possui este avatar.");

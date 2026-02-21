@@ -10,6 +10,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Representa um papel que pode ser atribuído a um {@link User}.
+ * <p>
+ * Um papel é um conjunto de permissões que determinam o que um usuário pode
+ * fazer no sistema.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,10 +26,16 @@ import lombok.Setter;
 @Table(name = "roles")
 public class Role {
 
+    /**
+     * Identificador único do papel.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Nome do papel.
+     */
     @Column(nullable = false, unique = true)
     private String name;
 
