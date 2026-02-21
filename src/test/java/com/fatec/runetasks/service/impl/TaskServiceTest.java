@@ -22,6 +22,7 @@ import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.model.enums.RepeatType;
+import com.fatec.runetasks.domain.model.enums.TaskDifficulty;
 import com.fatec.runetasks.domain.model.enums.TaskStatus;
 import com.fatec.runetasks.domain.repository.TaskRepository;
 import com.fatec.runetasks.exception.DuplicateResourceException;
@@ -112,10 +113,10 @@ public class TaskServiceTest {
     @DisplayName("Deve subir o nível do usuário quando o Xp ultrapassar o limite")
     void markTaskAsComplete_UserLevel() {
         User user = new User();
-        user.setProgressXp(120);
+        user.setProgressXp(100);
 
         Task task = new Task();
-        task.setTaskXp(50);
+        task.setDifficulty(TaskDifficulty.MEDIUM);
         task.setUser(user);
         task.setSkill(new Skill());
 
@@ -132,10 +133,9 @@ public class TaskServiceTest {
     @DisplayName("Deve subir o nível da habilidade quando o XP ultrapassar o limite")
     void markTaskAsComplete_SkillLevel() {
         Skill skill = new Skill();
-        skill.setProgressXp(50);
 
         Task task = new Task();
-        task.setTaskXp(50);
+        task.setDifficulty(TaskDifficulty.MEDIUM);
         task.setUser(new User());
         task.setSkill(skill);
 

@@ -2,9 +2,8 @@ package com.fatec.runetasks.domain.model;
 
 import java.time.LocalDate;
 
-import org.hibernate.annotations.Check;
-
 import com.fatec.runetasks.domain.model.enums.RepeatType;
+import com.fatec.runetasks.domain.model.enums.TaskDifficulty;
 import com.fatec.runetasks.domain.model.enums.TaskStatus;
 
 import jakarta.persistence.Column;
@@ -26,7 +25,6 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "tasks")
-@Check(constraints = "task_xp IN (20, 30, 50)")
 public class Task {
 
     @Id
@@ -42,8 +40,8 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.PENDING;
 
-    @Column
-    private int taskXp = 0;
+    @Enumerated(EnumType.STRING)
+    private TaskDifficulty difficulty;
 
     @Column
     private LocalDate date = LocalDate.now();
@@ -58,6 +56,22 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "skill_id", nullable = false)
     private Skill skill;
+
+    public int getTaskXp() {
+        return switch (this.difficulty) {
+            case EASY -> 20;
+            case MEDIUM -> 40;
+            case HARD -> 60;
+        };
+    }
+
+    public int getTaskCoins() {
+        return switch (this.difficulty) {
+            case EASY -> 5;
+            case MEDIUM -> 15;
+            case HARD -> 25;
+        };
+    }
 
     public void prepareNextOccurrence() {
         if (this.repeatType == RepeatType.NONE) {

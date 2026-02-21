@@ -63,13 +63,12 @@ CREATE TABLE tasks (
     title VARCHAR(100) NOT NULL,
     description VARCHAR(255),
     status VARCHAR(20) DEFAULT 'PENDING',
-    task_xp INT DEFAULT 0,
+    difficulty VARCHAR(20) NOT NULL,
     date DATE NOT NULL,
     repeat_type VARCHAR(20) DEFAULT 'NONE',
     user_id BIGINT NOT NULL,
     skill_id BIGINT NOT NULL,
 
-    CONSTRAINT chk_task_xp CHECK (task_xp IN (20, 30, 50)),
     CONSTRAINT fk_tasks_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_tasks_skill FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 );
@@ -82,6 +81,5 @@ CREATE TABLE rewards (
     status VARCHAR(20),
     user_id BIGINT NOT NULL,
     
-    CONSTRAINT chk_reward_price CHECK (price IN (30, 50, 75, 100, 150)),
     CONSTRAINT fk_rewards_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

@@ -1,7 +1,5 @@
 package com.fatec.runetasks.domain.model;
 
-import org.hibernate.annotations.Check;
-
 import com.fatec.runetasks.domain.model.enums.RewardStatus;
 
 import jakarta.persistence.Column;
@@ -23,7 +21,6 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "rewards")
-@Check(constraints = "price IN (30, 50, 75, 100, 150)")
 public class Reward {
 
     @Id

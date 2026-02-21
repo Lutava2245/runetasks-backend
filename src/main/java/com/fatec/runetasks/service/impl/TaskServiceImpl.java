@@ -17,6 +17,7 @@ import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.model.enums.RepeatType;
+import com.fatec.runetasks.domain.model.enums.TaskDifficulty;
 import com.fatec.runetasks.domain.model.enums.TaskStatus;
 import com.fatec.runetasks.domain.repository.SkillRepository;
 import com.fatec.runetasks.domain.repository.TaskRepository;
@@ -40,15 +41,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse convertToDTO(Task task) {
-        int coins = task.getTaskXp() / 2;
-
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getStatus().name(),
                 task.getTaskXp(),
-                coins,
+                task.getTaskCoins(),
                 task.getSkill().getName(),
                 task.getDate(),
                 task.getRepeatType().name());
@@ -111,18 +110,12 @@ public class TaskServiceImpl implements TaskService {
         Skill skill = skillRepository.findByNameAndUser(request.getSkillName(), user)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
 
-        int taskXp = switch (request.getDifficulty()) {
-            case "medium" -> 30;
-            case "hard" -> 50;
-            default -> 20;
-        };
-
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setDate(request.getDate());
         task.setRepeatType(RepeatType.valueOf(request.getRepeatType().toUpperCase()));
-        task.setTaskXp(taskXp);
+        task.setDifficulty(TaskDifficulty.valueOf(request.getDifficulty().toUpperCase()));
         task.setUser(user);
         task.setSkill(skill);
 
@@ -196,7 +189,7 @@ public class TaskServiceImpl implements TaskService {
 
         task.setStatus(TaskStatus.COMPLETED);
         user.addXp(task.getTaskXp());
-        user.addCoins(task.getTaskXp() / 2);
+        user.addCoins(task.getTaskCoins());
         skill.addXp(task.getTaskXp());
 
         eventPublisher.publishEvent(new UserBalanceChangedEvent(user));
