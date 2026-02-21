@@ -4,14 +4,14 @@ INSERT INTO roles (name) VALUES ('ROLE_USER'), ('ROLE_ADMIN');
 -- Inserindo os Avatares
 INSERT INTO avatars (title, icon, price) VALUES 
 ('Pessoa', 'person', 0),
-('Mago Sábio', 'wizard', 100),
-('Coroa Real', 'crown', 100),
-('Cavaleiro', 'knight', 150),
-('Escudeiro', 'shield', 150),
-('Arqueiro', 'bow', 200),
-('Espadachim', 'sword', 200),
-('Místico', 'crystal', 250),
-('Domador de Leões', 'lion', 250),
-('Trovão', 'lightning', 300),
-('Estelar', 'star', 350),
-('Caçador de Dragões', 'dragon', 500);
+('Mago Sábio', 'wizard', 250),
+('Coroa Real', 'crown', 250),
+('Cavaleiro', 'knight', 350),
+('Escudeiro', 'shield', 350),
+('Arqueiro', 'bow', 500),
+('Espadachim', 'sword', 500),
+('Místico', 'crystal', 750),
+('Domador de Leões', 'lion', 750),
+('Trovão', 'lightning', 1000),
+('Estelar', 'star', 1000),
+('Caçador de Dragões', 'dragon', 1500);

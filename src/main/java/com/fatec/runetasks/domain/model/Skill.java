@@ -38,21 +38,21 @@ public class Skill {
     @Column
     private int progressXp = 0;
 
-    @Column
-    private int xpToNextLevel = 90;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public int getXpToNextLevel() {
+        return 20 + (10 * level);
+    }
 
     public void addXp(final int xp) {
         this.totalXp += xp;
         this.progressXp += xp;
 
-        while (this.progressXp >= this.xpToNextLevel) {
-            this.progressXp -= this.xpToNextLevel;
+        while (this.progressXp >= getXpToNextLevel()) {
+            this.progressXp -= getXpToNextLevel();
             this.level++;
-            this.xpToNextLevel += (20 * this.level);
         }
     }
 }

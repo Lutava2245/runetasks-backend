@@ -67,9 +67,6 @@ public class User implements UserDetails {
     private int progressXp = 0;
 
     @Column
-    private int xpToNextLevel = 150;
-
-    @Column
     private LocalDate createdAt = LocalDate.now();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -92,14 +89,17 @@ public class User implements UserDetails {
         return this.email;
     }
 
+    public int getXpToNextLevel() {
+        return 30 + (90 * level);
+    }
+
     public void addXp(final int xp) {
         this.totalXp += xp;
         this.progressXp += xp;
 
-        while (this.progressXp >= this.xpToNextLevel) {
-            this.progressXp -= this.xpToNextLevel;
+        while (this.progressXp >= getXpToNextLevel()) {
+            this.progressXp -= getXpToNextLevel();
             this.level++;
-            this.xpToNextLevel += (30 * this.level);
         }
     }
 

@@ -21,7 +21,6 @@ CREATE TABLE users (
     total_coins INT DEFAULT 0,
     level INT DEFAULT 1,
     progress_xp INT DEFAULT 0,
-    xp_to_next_level INT DEFAULT 150,
     created_at DATE NOT NULL,
     
     CONSTRAINT fk_users_current_avatar FOREIGN KEY (avatar_id) REFERENCES avatars(id)
@@ -52,7 +51,6 @@ CREATE TABLE skills (
     total_xp INT DEFAULT 0,
     level INT DEFAULT 1,
     progress_xp INT DEFAULT 0,
-    xp_to_next_level INT DEFAULT 90,
     user_id BIGINT NOT NULL,
 
     CONSTRAINT fk_skills_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

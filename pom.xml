@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.10</version>
+		<version>3.5.11</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.fatec</groupId>
 	<artifactId>runetasks</artifactId>
-	<version>1.2.2-SNAPSHOT</version>
+	<version>1.2.3-SNAPSHOT</version>
 	<name>runetasks</name>
 	<description>Sistema gameficado de gerenciamento de tarefas com recompensas e pontuações</description>
 	<url>https://github.com/Lutava2245/runetasks-backend</url>
@@ -147,7 +147,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
