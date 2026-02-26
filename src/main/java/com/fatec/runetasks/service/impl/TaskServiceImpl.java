@@ -29,6 +29,20 @@ import com.fatec.runetasks.service.TaskService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Classe de serviço para operações da entidade {@link Task}.
+ * <p>
+ * Contém métodos para o gerenciamento de tarefas e seus estados, como
+ * encontrar tarefas, editá-las, completar e bloquear, entre outros. Também
+ * possui métodos auxiliares como conversão dos dados da entidade para DTO,
+ * verificação de quem é o dono da recompensa e de qual é a habilidade
+ * relacionada.
+ * <p>
+ * Esta classe é uma implementação concreta da interface {@link TaskService}.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @RequiredArgsConstructor
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -67,6 +81,21 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Tarefa não encontrada"));
 
         return task.getSkill().getId().equals(skillId);
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    @Override
+    public void resetRecurringTasks() {
+        List<Task> recurringTasks = taskRepository.findByRepeatTypeNotAndDateBefore(RepeatType.NONE, LocalDate.now());
+
+        for (Task task : recurringTasks) {
+            if (task.getStatus().equals(TaskStatus.COMPLETED)) {
+                task.prepareNextOccurrence();
+            }
+        }
+
+        taskRepository.saveAll(recurringTasks);
     }
 
     @Override
@@ -141,21 +170,6 @@ public class TaskServiceImpl implements TaskService {
         task.setRepeatType(RepeatType.valueOf(request.getRepeatType().toUpperCase()));
 
         taskRepository.save(task);
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
-    @Override
-    public void resetRecurringTasks() {
-        List<Task> recurringTasks = taskRepository.findByRepeatTypeNotAndDateBefore(RepeatType.NONE, LocalDate.now());
-
-        for (Task task : recurringTasks) {
-            if (task.getStatus().equals(TaskStatus.COMPLETED)) {
-                task.prepareNextOccurrence();
-            }
-        }
-
-        taskRepository.saveAll(recurringTasks);
     }
 
     @Transactional

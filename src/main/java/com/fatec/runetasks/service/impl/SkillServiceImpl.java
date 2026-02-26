@@ -19,6 +19,19 @@ import com.fatec.runetasks.service.SkillService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Classe de serviço para operações da entidade {@link Skill}.
+ * <p>
+ * Contém métodos para o gerenciamento de habilidades e seus estados, como
+ * encontrar habilidades, excluir tarefas, editá-las, entre outros. Também
+ * possui métodos auxiliares como conversão dos dados da entidade para DTO e
+ * verificação de quem é o dono da habilidade.
+ * <p>
+ * Esta classe é uma implementação concreta da interface {@link SkillService}.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @RequiredArgsConstructor
 @Service
 public class SkillServiceImpl implements SkillService {
@@ -99,7 +112,8 @@ public class SkillServiceImpl implements SkillService {
         Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
 
-        if (!skill.getName().equals(request.getName()) && skillRepository.existsByNameAndUser(request.getName(), skill.getUser())) {
+        if (!skill.getName().equals(request.getName())
+                && skillRepository.existsByNameAndUser(request.getName(), skill.getUser())) {
             throw new DuplicateResourceException("Erro: Habilidade de mesmo nome já existente.");
         }
 

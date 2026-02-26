@@ -29,6 +29,19 @@ import com.fatec.runetasks.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Classe de serviço para operações da entidade {@link User}.
+ * <p>
+ * Contém métodos para o gerenciamento de usuários e seus estados, como
+ * encontrar usuários, trocar senhas, registrá-los, entre outros. Também possui
+ * métodos auxiliares como conversão dos dados da entidade para DTO e validação
+ * de senhas.
+ * <p>
+ * Esta classe é uma implementação concreta da interface {@link UserService}.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
@@ -196,7 +209,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new ResourceNotFoundException("Erro: Usuário não possui avatar para equipar.");
         }
-        throw new ResourceNotFoundException("Erro: Usuário não possui avatar para equipar.");
     }
 
     @Transactional

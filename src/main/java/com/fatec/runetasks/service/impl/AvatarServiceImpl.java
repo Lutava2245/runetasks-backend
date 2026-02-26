@@ -14,6 +14,17 @@ import com.fatec.runetasks.service.AvatarService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Classe de serviço para operações da entidade {@link Avatar}.
+ * <p>
+ * Contém métodos para encontrar avatares na loja e para converter dos dados da
+ * entidade para DTO.
+ * <p>
+ * Esta classe é uma implementação concreta da interface {@link AvatarService}.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @RequiredArgsConstructor
 @Service
 public class AvatarServiceImpl implements AvatarService {

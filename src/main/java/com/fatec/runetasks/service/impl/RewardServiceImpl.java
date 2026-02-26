@@ -17,8 +17,22 @@ import com.fatec.runetasks.domain.repository.RewardRepository;
 import com.fatec.runetasks.event.UserBalanceChangedEvent;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.service.RewardService;
+
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Classe de serviço para operações da entidade {@link Reward}.
+ * <p>
+ * Contém métodos para o gerenciamento de recompensas e seus estados, como
+ * encontrar recompensas, excluir recompensas, editá-las, entre outros. Também
+ * possui métodos auxiliares como conversão dos dados da entidade para DTO e
+ * verificação de quem é o dono da recompensa.
+ * <p>
+ * Esta classe é uma implementação concreta da interface {@link RewardService}.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @RequiredArgsConstructor
 @Service
 public class RewardServiceImpl implements RewardService {
@@ -47,14 +61,13 @@ public class RewardServiceImpl implements RewardService {
     @Override
     public void handleBalanceChange(UserBalanceChangedEvent event) {
         User user = event.user();
-        
+
         List<Reward> rewards = rewardRepository.findByUserId(user.getId());
         rewards.stream()
-            .filter(r -> r.getStatus() != RewardStatus.REDEEMED)
-            .forEach(r -> {
-                r.setStatus(user.getTotalCoins() >= r.getPrice() ? 
-                           RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
-            });
+                .filter(r -> r.getStatus() != RewardStatus.REDEEMED)
+                .forEach(r -> {
+                    r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
+                });
         rewardRepository.saveAll(rewards);
     }
 

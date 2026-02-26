@@ -18,6 +18,17 @@ import com.fatec.runetasks.service.StoreService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Classe de serviço para operações do sistema de Loja.
+ * <p>
+ * Contém métodos para lidar com gastos do usuário na loja, como comprar
+ * {@link Avatar} e resgatar {@link Reward}.
+ * <p>
+ * Esta classe é uma implementação concreta da interface {@link StoreService}.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @RequiredArgsConstructor
 @Service
 public class StoreServiceImpl implements StoreService {
