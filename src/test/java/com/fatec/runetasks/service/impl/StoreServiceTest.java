@@ -50,7 +50,7 @@ public class StoreServiceTest {
     @DisplayName("Deve comprar avatar com sucesso e disparar evento de saldo")
     void buyAvatar_Success() {
         Avatar userAvatar = new Avatar();
-        userAvatar.setIcon("UserAvatar");
+        userAvatar.setIconName("UserAvatar");
 
         User user = new User();
         user.setTotalCoins(130);
@@ -59,7 +59,7 @@ public class StoreServiceTest {
         Avatar avatar = new Avatar();
         avatar.setId(1L);
         avatar.setPrice(100);
-        avatar.setIcon("NewAvatar");
+        avatar.setIconName("NewAvatar");
 
         when(avatarRepository.findById(1L)).thenReturn(Optional.of(avatar));
 

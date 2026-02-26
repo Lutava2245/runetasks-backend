@@ -21,8 +21,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Representa uma tarefa que pode ser criada pelo {@link User} e concluída por
- * ele.
+ * Representa uma tarefa que pode ser criada e concluída por um usuário
+ * {@link User}.
  * <p>
  * Uma tarefa é um item que serve para ser concluído pelo usuário. Ao completar
  * tarefas, o usuário ganha experiência e moedas, e a {@link Skill} relacionada
@@ -81,7 +81,7 @@ public class Task {
 
     /**
      * Tipo de recorrência da tarefa.
-     * 
+
      * @see RepeatType
      */
     @Enumerated(EnumType.STRING)
@@ -103,8 +103,16 @@ public class Task {
 
     /**
      * Retorna o XP dado pela tarefa de acordo com {@link TaskDifficulty}.
+     * <p>
+     * A quantidade de experiência dada pela tarefa é definida da seguinte forma:
+     * <ul>
+     * <li>Fácil -> 20 de XP</li>
+     * <li>Média -> 40 de XP</li>
+     * <li>Difícil -> 60 de XP</li>
+     * </ul>
+     * <p>
      * 
-     * @return um <code>int</code> do valor do XP
+     * @return um {@code int} do valor do XP
      */
     public int getTaskXp() {
         return switch (this.difficulty) {
@@ -116,8 +124,16 @@ public class Task {
 
     /**
      * Retorna as modeas dadas pela tarefa de acordo com {@link TaskDifficulty}.
+     * <p>
+     * A quantidade de moedas dadas pela tarefa são definidas da seguinte forma:
+     * <ul>
+     * <li>Fácil -> 5 moedas</li>
+     * <li>Média -> 15 moedas</li>
+     * <li>Difícil -> 25 moedas</li>
+     * </ul>
+     * <p>
      * 
-     * @return um <code>int</code> do número de moedas
+     * @return um {@code int} do número de moedas
      */
     public int getTaskCoins() {
         return switch (this.difficulty) {
@@ -131,11 +147,22 @@ public class Task {
      * Prepara a próxima ocorrência da tarefa.
      * <p>
      * Se a tarefa for recorrente, a data da tarefa é atualizada para a próxima
-     * ocorrência e o status é definido como <code>TaskStatus.PENDING</code>.
+     * ocorrência e o status é definido como {@link TaskStatus#PENDING}.
      * <p>
+     * Dependendo o tipo de recorrência da tarefa, a nova data é definida:
+     * <ul>
+     * <li>
+     * Diária -> data é atualizada para o dia atual
+     * </li>
+     * <li>
+     * Semanal -> data é atualizada para o próximo dia da semana correspondente
+     * </li>
+     * <li>
+     * Mensal -> data é atualizada para o próximo dia do mês correspondente
+     * </li>
+     * </ul>
      * 
      * @see RepeatType
-     * @see TaskStatus
      */
     public void prepareNextOccurrence() {
         if (this.repeatType == RepeatType.NONE) {
@@ -156,8 +183,9 @@ public class Task {
                     nextDate = nextDate.plusMonths(1);
                 }
             }
-            default -> {}
-        };
+            default -> {
+            }
+        }
 
         this.date = nextDate;
         this.status = TaskStatus.PENDING;

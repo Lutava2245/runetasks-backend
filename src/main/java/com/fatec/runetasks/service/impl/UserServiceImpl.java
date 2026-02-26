@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
                 user.getName(),
                 user.getNickname(),
                 user.getEmail(),
-                user.getCurrentAvatar().getIcon(),
+                user.getCurrentAvatar().getIconName(),
                 user.getLevel(),
                 user.getXpToNextLevel(),
                 levelPercentage,
@@ -187,12 +187,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void selectAvatar(User user, String avatarName) {
-        for (Avatar userAvatar : user.getOwnedAvatars()) {
-            if (userAvatar.getIcon().equals(avatarName)) {
-                user.setCurrentAvatar(userAvatar);
-                userRepository.save(user);
-                return;
-            }
+        Avatar selectedAvatar = avatarRepository.findByIcon(avatarName)
+                .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar não encontrado."));
+
+        if (user.hasAvatar(selectedAvatar)) {
+            user.setCurrentAvatar(selectedAvatar);
+            userRepository.save(user);
+        } else {
+            throw new ResourceNotFoundException("Erro: Usuário não possui avatar para equipar.");
         }
         throw new ResourceNotFoundException("Erro: Usuário não possui avatar para equipar.");
     }

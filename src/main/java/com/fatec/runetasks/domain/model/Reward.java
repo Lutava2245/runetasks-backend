@@ -17,8 +17,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Representa uma recompensa que pode ser criada pelo {@link User} e resgatada
- * por ele
+ * Representa uma recompensa que pode ser criada e resgatada pelo {@link User}.
  * <p>
  * Uma recompensa é um item que serve para ser trocado por moedas após a
  * conclusão de tarefas.
@@ -60,6 +59,8 @@ public class Reward {
 
     /**
      * Status da recompensa.
+     * 
+     * @see RewardStatus
      */
     @Enumerated(EnumType.STRING)
     private RewardStatus status;

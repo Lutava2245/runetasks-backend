@@ -11,9 +11,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Representa um avatar que pode ser comprado pelo {@link User}.
+ * Representa um avatar que pode ser comprado e usado por um {@link User}.
  * <p>
- * Um avatar é uma imagem que pode ser usada como foto de perfil.
+ * Um avatar é um ícone que pode ser comprado utilizando moedas e usado como
+ * foto de perfil de usuários.
  * <p>
  * 
  * @author Luan T. Felix
@@ -39,10 +40,10 @@ public class Avatar {
     private String title;
 
     /**
-     * Ícone do avatar.
+     * Nome do ícone do avatar.
      */
     @Column(nullable = false, unique = true)
-    private String icon;
+    private String iconName;
 
     /**
      * Preço do avatar.

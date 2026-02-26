@@ -21,7 +21,7 @@ public class AvatarServiceImpl implements AvatarService {
     private final AvatarRepository avatarRepository;
 
     @Override
-    public AvatarResponse convertAvatarToDTO(Avatar avatar, User user) {
+    public AvatarResponse convertToDTO(Avatar avatar, User user) {
         boolean isOwned = false;
         for (Avatar userAvatar : user.getOwnedAvatars()) {
             if (Objects.equals(userAvatar.getId(), avatar.getId())) {
@@ -33,17 +33,17 @@ public class AvatarServiceImpl implements AvatarService {
         return new AvatarResponse(
                 avatar.getId(),
                 avatar.getTitle(),
-                avatar.getIcon(),
+                avatar.getIconName(),
                 avatar.getPrice(),
                 isOwned);
     }
 
     @Override
-    public List<AvatarResponse> getAllAvatars(User user) {
+    public List<AvatarResponse> getAll(User user) {
         List<Avatar> avatars = avatarRepository.findAll();
 
         return avatars.stream()
-                .map(avatar -> convertAvatarToDTO(avatar, user))
+                .map(avatar -> convertToDTO(avatar, user))
                 .collect(Collectors.toList());
     }
 

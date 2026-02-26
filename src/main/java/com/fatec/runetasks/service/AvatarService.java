@@ -11,8 +11,8 @@ import com.fatec.runetasks.domain.model.User;
 @Service
 public interface AvatarService {
 
-    AvatarResponse convertAvatarToDTO(Avatar avatar, User user);
+    AvatarResponse convertToDTO(Avatar avatar, User user);
 
-    List<AvatarResponse> getAllAvatars(User user);
+    List<AvatarResponse> getAll(User user);
 
 }

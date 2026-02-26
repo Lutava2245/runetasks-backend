@@ -13,8 +13,6 @@ public interface AvatarRepository extends JpaRepository<Avatar, Long> {
 
     boolean existsByIcon(String icon);
 
-    Optional<Avatar> findByTitle(String title);
-    
     Optional<Avatar> findByIcon(String icon);
 
     List<Avatar> findByPriceLessThanEqual(int price);

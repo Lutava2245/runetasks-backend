@@ -43,7 +43,7 @@ public class StoreController {
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
     public ResponseEntity<List<AvatarResponse>> getAllAvatars(@AuthenticationPrincipal User user) {
-        List<AvatarResponse> avatarsResponse = avatarService.getAllAvatars(user);
+        List<AvatarResponse> avatarsResponse = avatarService.getAll(user);
         return ResponseEntity.ok(avatarsResponse);
     }
 

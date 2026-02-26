@@ -14,7 +14,8 @@ import lombok.Setter;
  * Representa um papel que pode ser atribuído a um {@link User}.
  * <p>
  * Um papel é um conjunto de permissões que determinam o que um usuário pode
- * fazer no sistema.
+ * fazer no sistema. São usados para diferenciar usuários comuns (ROLE_USER) de
+ * administradores (ROLE_ADMIN).
  * <p>
  * 
  * @author Luan T. Felix

@@ -138,12 +138,13 @@ public class User implements UserDetails {
     }
 
     /**
-     * Retorna o <code>username</code> do usuário utilizado para autenticação.
+     * Retorna o {@code username} do usuário utilizado para autenticação.
      * <p>
-     * O <code>username</code> é o email do usuário.
+     * O {@code username} pode ser o e-mail do usuário ou seu nickname. Este método
+     * retorna o email.
      * <p>
      * 
-     * @return Email do usuário.
+     * @return o email do usuário.
      */
     @Override
     public String getUsername() {
@@ -165,8 +166,8 @@ public class User implements UserDetails {
     /**
      * Adiciona pontos de experiência ao usuário.
      * <p>
-     * Se o usuário atingir o nível máximo, os pontos de experiência são
-     * resetados e o nível é incrementado.
+     * Quando o usuário atinge o XP necessário, os pontos de experiência são
+     * resetados e o seu nível sobe.
      * <p>
      * 
      * @param xp Pontos de experiência a serem adicionados.
@@ -182,7 +183,7 @@ public class User implements UserDetails {
     }
 
     /**
-     * Adiciona moedas ao usuário.
+     * Adiciona moedas ganhas ao usuário.
      * 
      * @param amount Moedas a serem adicionadas.
      */
@@ -191,13 +192,11 @@ public class User implements UserDetails {
     }
 
     /**
-     * Remove moedas do usuário.
-     * <p>
-     * Se o usuário não tiver moedas suficientes, lança uma
-     * {@link InsufficientCoinsException}.
-     * <p>
+     * Remove uma quantidade de moedas do usuário.
      * 
-     * @param amount Moedas a serem removidas.
+     * @param amount o {@code int} de moedas a serem removidas.
+     * @throws InsufficientCoinsException Caso o usuário não tenha moedas
+     *                                    suficientes.
      */
     public void spendCoins(final int amount) {
         if (this.totalCoins < amount) {
@@ -210,22 +209,19 @@ public class User implements UserDetails {
      * Verifica se o usuário possui um avatar.
      * 
      * @param avatar Avatar a ser verificado.
-     * @return <code>true</code> se o usuário possui o avatar, <code>false</code>
-     *         caso contrário.
+     * @return {@code true} se o usuário possui o avatar,
+     *         {@code false} caso contrário.
      */
     public boolean hasAvatar(final Avatar avatar) {
         return this.ownedAvatars.stream()
-                .anyMatch(a -> a.getIcon().equals(avatar.getIcon()));
+                .anyMatch(a -> a.getIconName().equals(avatar.getIconName()));
     }
 
     /**
-     * Adiciona um avatar ao usuário.
-     * <p>
-     * Se o usuário já possuir o avatar, lança uma
-     * {@link DuplicateResourceException}.
-     * <p>
+     * Adiciona um novo avatar para a lista de avatares do usuário.
      * 
      * @param avatar Avatar a ser adicionado.
+     * @throws DuplicateResourceException Caso o usuário já possua o avatar.
      */
     public void addAvatar(final Avatar avatar) {
         if (hasAvatar(avatar)) {

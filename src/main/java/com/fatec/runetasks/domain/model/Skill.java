@@ -13,11 +13,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Representa uma habilidade que pode ser desenvolvida pelo {@link User}.
+ * Representa uma habilidade que pode ser desenvolvida por um {@link User}.
  * <p>
- * Uma habilidade é um conjunto de tarefas que pode ser desenvolvida pelo
- * usuário.
- * Ela contém pontos de experiência e um sistema de níveis que o usuário pode
+ * Uma habilidade é um conjunto de tarefas que pode ser criada e desenvolvida
+ * com pontos de experiência e um sistema de níveis que o usuário pode
  * ganhar ao completar uma {@link Task}.
  * <p>
  * 
@@ -50,19 +49,19 @@ public class Skill {
     private String icon;
 
     /**
-     * Total de pontos de experiência do usuário.
+     * Total de pontos de experiência da habilidade.
      */
     @Column
     private int totalXp = 0;
 
     /**
-     * Nível do usuário na habilidade.
+     * Nível da habilidade.
      */
     @Column
     private int level = 1;
 
     /**
-     * Pontos de experiência do usuário na habilidade.
+     * Pontos de experiência da habilidade.
      */
     @Column
     private int progressXp = 0;
@@ -77,20 +76,20 @@ public class Skill {
     /**
      * Retorna o total de XP necessário para atingir o pŕoximo nível.
      * <p>
-     * O XP necessário é calculado de acordo com o nível atual da habilidade
+     * O XP necessário é calculado de acordo com o nível atual da habilidade.
      * <p>
      * 
-     * @return um <code>int</code> do total de XP para subir de nível
+     * @return um {@code int} do total de XP para subir de nível.
      */
     public int getXpToNextLevel() {
         return 20 + (10 * level);
     }
 
     /**
-     * Adiciona pontos de experiência da habilidade ao usuário.
+     * Adiciona pontos de experiência a habilidade.
      * <p>
-     * Se a habilidade atingir o nível máximo, os pontos de experiência são
-     * resetados e o nível é incrementado.
+     * Quando a habilidade atinge o XP necessário, os pontos de experiência são
+     * resetados e o seu nível sobe.
      * <p>
      * 
      * @param xp Pontos de experiência a serem adicionados.
