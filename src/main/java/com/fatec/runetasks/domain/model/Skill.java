@@ -46,7 +46,7 @@ public class Skill {
      * Ícone da habilidade.
      */
     @Column(nullable = false)
-    private String icon;
+    private String iconName;
 
     /**
      * Total de pontos de experiência da habilidade.

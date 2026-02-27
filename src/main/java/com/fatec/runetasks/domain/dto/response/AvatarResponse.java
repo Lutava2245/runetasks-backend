@@ -32,7 +32,7 @@ public class AvatarResponse {
      * Nome do ícone do avatar.
      */
     @Schema(description = "Nome do ícone do avatar", example = "user_avatar")
-    private String icon;
+    private String iconName;
 
     /**
      * Preço do avatar.

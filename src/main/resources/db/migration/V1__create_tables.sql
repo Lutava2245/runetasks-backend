@@ -6,7 +6,7 @@ CREATE TABLE roles (
 CREATE TABLE avatars (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(50) NOT NULL UNIQUE,
-    icon VARCHAR(255) NOT NULL UNIQUE,
+    icon_name VARCHAR(255) NOT NULL UNIQUE,
     price INT NOT NULL
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE user_roles (
 CREATE TABLE skills (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    icon VARCHAR(255) NOT NULL,
+    icon_name VARCHAR(255) NOT NULL,
     total_xp INT DEFAULT 0,
     level INT DEFAULT 1,
     progress_xp INT DEFAULT 0,

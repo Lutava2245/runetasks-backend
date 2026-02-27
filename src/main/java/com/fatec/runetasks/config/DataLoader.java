@@ -48,7 +48,7 @@ public class DataLoader implements CommandLineRunner {
             Role adminRole = roleRepository.findByName("ROLE_ADMIN")
                     .orElseThrow(() -> new ResourceNotFoundException("Erro: ROLE_ADMIN não encontrado."));
 
-            Avatar initialAvatar = avatarRepository.findByIcon("person")
+            Avatar initialAvatar = avatarRepository.findByIconName("person")
                     .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar inicial não encontrado."));
 
             List<Avatar> adminAvatars = avatarRepository.findAll();

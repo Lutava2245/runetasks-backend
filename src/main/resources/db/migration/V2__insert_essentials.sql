@@ -2,7 +2,7 @@
 INSERT INTO roles (name) VALUES ('ROLE_USER'), ('ROLE_ADMIN');
 
 -- Inserindo os Avatares
-INSERT INTO avatars (title, icon, price) VALUES 
+INSERT INTO avatars (title, icon_name, price) VALUES 
 ('Pessoa', 'person', 0),
 ('Mago Sábio', 'wizard', 250),
 ('Coroa Real', 'crown', 250),

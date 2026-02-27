@@ -15,6 +15,6 @@ public class SkillRequest {
 
     @Valid
     @NotBlank
-    private String icon;
-    
+    private String iconName;
+
 }

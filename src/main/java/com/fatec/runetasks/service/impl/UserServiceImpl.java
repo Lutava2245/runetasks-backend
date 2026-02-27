@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Role padrão não encontrado."));
-        Avatar initialAvatar = avatarRepository.findByIcon("person")
+        Avatar initialAvatar = avatarRepository.findByIconName("person")
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar inicial não encontrado."));
 
         User user = new User();
@@ -200,7 +200,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void selectAvatar(User user, String avatarName) {
-        Avatar selectedAvatar = avatarRepository.findByIcon(avatarName)
+        Avatar selectedAvatar = avatarRepository.findByIconName(avatarName)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Avatar não encontrado."));
 
         if (user.hasAvatar(selectedAvatar)) {

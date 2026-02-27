@@ -32,7 +32,7 @@ public class SkillResponse {
      * Nome do ícone da habilidade.
      */
     @Schema(description = "Nome do ícone da habilidade", example = "habilidade_exemplo")
-    private String icon;
+    private String iconName;
 
     /**
      * Nível de XP da habilidade.

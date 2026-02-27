@@ -49,7 +49,7 @@ public class SkillServiceImpl implements SkillService {
         return new SkillResponse(
                 skill.getId(),
                 skill.getName(),
-                skill.getIcon(),
+                skill.getIconName(),
                 skill.getLevel(),
                 skill.getXpToNextLevel(),
                 levelPercentage,
@@ -100,7 +100,7 @@ public class SkillServiceImpl implements SkillService {
 
         Skill skill = new Skill();
         skill.setName(request.getName());
-        skill.setIcon(request.getIcon());
+        skill.setIconName(request.getIconName());
         skill.setUser(user);
 
         skillRepository.save(skill);
@@ -118,7 +118,7 @@ public class SkillServiceImpl implements SkillService {
         }
 
         skill.setName(request.getName());
-        skill.setIcon(request.getIcon());
+        skill.setIconName(request.getIconName());
 
         skillRepository.save(skill);
     }
