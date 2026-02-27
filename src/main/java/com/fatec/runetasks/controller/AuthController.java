@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fatec.runetasks.domain.model.User;
+import com.fatec.runetasks.service.impl.UserDetailsServiceImpl;
 import com.fatec.runetasks.util.JwtUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +22,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Controller para gerenciar endpoint de autenticação da entidade {@link User}.
+ * 
+ * @author Luan T. Felix
+ * @see UserDetailsServiceImpl
+ */
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -30,12 +38,24 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
+    /**
+     * Requisição DTO que recebe dados para a autenticação.
+     */
     public record LoginRequest(String username, String password) {
     }
 
+    /**
+     * Classe DTO que representa o token JWT gerado após autenticação.
+     */
     public record LoginResponse(String jwtToken) {
     }
 
+    /**
+     * Endpoint para autenticar um usuário e gerar um token JWT.
+     * 
+     * @param loginRequest DTO contendo o nome de usuário e senha para autenticação.
+     * @return um {@link ResponseEntity} contendo o token JWT ou mensagem de erro.
+     */
     @PostMapping("login")
     @Operation(summary = "Autenticar usuário", description = "Retorna um novo JWT para login de usuários")
     @ApiResponses(value = {

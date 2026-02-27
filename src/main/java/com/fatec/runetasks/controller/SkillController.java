@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fatec.runetasks.domain.dto.request.SkillRequest;
 import com.fatec.runetasks.domain.dto.response.SkillResponse;
+import com.fatec.runetasks.domain.model.Role;
+import com.fatec.runetasks.domain.model.Skill;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.SkillService;
 
@@ -27,6 +29,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Controller para gerenciar endpoints relacionados a entidade {@link Skill}.
+ * <p>
+ * Fornece endpoints para operações CRUD como criação, leitura, atualização e
+ * exclusão de habilidades. A maioria dos endpoints requer autenticação, e
+ * alguns são restritos a usuários com o {@link Role} de administrador.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ * @see SkillService
+ */
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -36,6 +49,15 @@ public class SkillController {
 
     private final SkillService skillService;
 
+    /**
+     * Endpoint para listar todas as habilidades cadastradas no sistema.
+     * <p>
+     * Este endpoint é restrito a usuários com o papel de administrador.
+     * <p>
+     * 
+     * @return um {@link ResponseEntity} contendo a lista de todas as
+     *         {@link SkillResponse} ou mensagem de erro.
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar todas as habilidades", description = "Retorna uma lista de todas as habilidades cadastradas")
@@ -48,6 +70,17 @@ public class SkillController {
         return ResponseEntity.ok(skillResponses);
     }
 
+    /**
+     * Endpoint para listar todas as habilidades associadas a um usuário específico.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário dono
+     * das habilidades.
+     * <p>
+     * 
+     * @param id Identificador único do usuário dono das habilidades.
+     * @return um {@link ResponseEntity} contendo a lista de {@link SkillResponse}
+     *         do usuário ou mensagem de erro.
+     */
     @GetMapping("user/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     @Operation(summary = "Listar habilidades por usuário", description = "Retorna habilidades de um usuário específico")
@@ -60,6 +93,17 @@ public class SkillController {
         return ResponseEntity.ok(skillResponses);
     }
 
+    /**
+     * Endpoint para buscar uma habilidade pelo seu {@code id} no banco de dados.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário dono
+     * da habilidade.
+     * <p>
+     * 
+     * @param id Identificador único da habilidade.
+     * @return um {@link ResponseEntity} contendo a {@link SkillResponse} ou
+     *         mensagem de erro.
+     */
     @GetMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or @skillServiceImpl.isOwner(#id, principal.id)")
     @Operation(summary = "Buscar habilidade por ID", description = "Retorna os detalhes de uma habilidade específica")
@@ -73,6 +117,17 @@ public class SkillController {
         return ResponseEntity.ok(skillResponse);
     }
 
+    /**
+     * Endpoint para registrar uma habilidade no banco de dados.
+     * <p>
+     * Este endpoint é acessível para qualquer usuário autenticado no sistema.
+     * <p>
+     * 
+     * @param requestDTO Requisição contendo os dados da habilidade.
+     * @param user       Usuário autenticado.
+     * @return um {@link ResponseEntity} com status {@code 201 Created} se a
+     *         habilidade for criada com sucesso ou mensagem de erro.
+     */
     @PostMapping("register")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Cadastrar nova habilidade", description = "Cria uma nova habilidade associada a um usuário autenticado")
@@ -87,6 +142,18 @@ public class SkillController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * Endpoint para editar os dados de uma habilidade existente.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário dono
+     * da habilidade.
+     * <p>
+     * 
+     * @param requestDTO Requisição contendo os dados atualizados da habilidade.
+     * @param id         Identificador único da habilidade a ser editada.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se a
+     *         habilidade for atualizada com sucesso ou mensagem de erro.
+     */
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or @skillServiceImpl.isOwner(#id, principal.id)")
     @Operation(summary = "Editar habilidade", description = "Atualiza os dados de uma habilidade existente")
@@ -101,6 +168,17 @@ public class SkillController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Endpoint para deletar uma habilidade existente.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário dono
+     * da habilidade.
+     * <p>
+     * 
+     * @param id Identificador único da habilidade a ser excluída.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se a
+     *         habilidade for excluída ou mensagem de erro.
+     */
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or @skillServiceImpl.isOwner(#id, principal.id)")
     @Operation(summary = "Excluir habilidade", description = "Exclui uma habilidade existente")

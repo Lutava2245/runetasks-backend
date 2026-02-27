@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fatec.runetasks.domain.dto.request.RewardCreateRequest;
 import com.fatec.runetasks.domain.dto.request.RewardUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.RewardResponse;
+import com.fatec.runetasks.domain.model.Reward;
+import com.fatec.runetasks.domain.model.Role;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.RewardService;
 
@@ -28,6 +30,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Controller para gerenciar endpoints relacionados a entidade {@link Reward}.
+ * <p>
+ * Fornece endpoints para operações CRUD como criação, leitura, atualização e
+ * exclusão de recompensas. A maioria dos endpoints requer autenticação, e
+ * alguns são restritos a usuários com o {@link Role} de administrador.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ * @see RewardService
+ */
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -37,6 +50,15 @@ public class RewardController {
 
     private final RewardService rewardService;
 
+    /**
+     * Endpoint para listar todas as recompensas cadastradas no sistema.
+     * <p>
+     * Este endpoint é restrito a usuários com o papel de administrador.
+     * <p>
+     * 
+     * @return um {@link ResponseEntity} contendo a lista de todas as
+     *         {@link RewardResponse} ou mensagem de erro.
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar todas as recompensas", description = "Retorna uma lista de todas as recompensas cadastradas")
@@ -49,6 +71,17 @@ public class RewardController {
         return ResponseEntity.ok(RewardResponses);
     }
 
+    /**
+     * Endpoint para listar todas as recompensas associadas a um usuário específico.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário dono
+     * das recompensas.
+     * <p>
+     * 
+     * @param id Identificador único do usuário dono das recompensas.
+     * @return um {@link ResponseEntity} contendo a lista de {@link RewardResponse}
+     *         do usuário ou mensagem de erro.
+     */
     @GetMapping("user/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     @Operation(summary = "Listar recompensas por usuário", description = "Retorna uma lista de recompensas cadastradas por um usuário específico")
@@ -61,6 +94,17 @@ public class RewardController {
         return ResponseEntity.ok(RewardResponses);
     }
 
+    /**
+     * Endpoint para buscar uma recompensa pelo seu {@code id} no banco de dados.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário dono
+     * da recompensa.
+     * <p>
+     * 
+     * @param id Identificador único da recompensa.
+     * @return um {@link ResponseEntity} contendo a {@link RewardResponse} ou
+     *         mensagem de erro.
+     */
     @GetMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or @rewardServiceImpl.isOwner(#id, principal.id)")
     @Operation(summary = "Buscar recompensa por ID", description = "Retorna os detalhes de uma recompensa específica")
@@ -74,6 +118,17 @@ public class RewardController {
         return ResponseEntity.ok(RewardResponse);
     }
 
+    /**
+     * Endpoint para registrar uma recompensa no banco de dados.
+     * <p>
+     * Este endpoint é acessível para qualquer usuário autenticado no sistema.
+     * <p>
+     * 
+     * @param requestDTO Requisição contendo os dados da recompensa.
+     * @param user       Usuário autenticado.
+     * @return um {@link ResponseEntity} com status {@code 201 Created} se a
+     *         recompensa for criada com sucesso ou mensagem de erro.
+     */
     @PostMapping("register")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Cadastrar nova recompensa", description = "Cria uma nova recompensa associada ao usuário autenticado")
@@ -87,6 +142,18 @@ public class RewardController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * Endpoint para editar os dados de uma recompensa existente.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário dono
+     * da recompensa.
+     * <p>
+     * 
+     * @param requestDTO Requisição contendo os dados atualizados da recompensa.
+     * @param id         Identificador único da recompensa a ser editada.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se a
+     *         recompensa for atualizada com sucesso ou mensagem de erro.
+     */
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or @rewardServiceImpl.isOwner(#id, principal.id)")
     @Operation(summary = "Editar recompensa", description = "Atualiza os dados de uma recompensa existente")
@@ -100,6 +167,17 @@ public class RewardController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Endpoint para deletar uma recompensa existente.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário dono
+     * da recompensa.
+     * <p>
+     * 
+     * @param id Identificador único da recompensa a ser excluída.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se a
+     *         recompensa for excluída ou mensagem de erro.
+     */
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or @rewardServiceImpl.isOwner(#id, principal.id)")
     @Operation(summary = "Excluir recompensa", description = "Exclui uma recompensa existente")

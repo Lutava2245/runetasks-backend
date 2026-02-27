@@ -21,6 +21,7 @@ import com.fatec.runetasks.domain.dto.request.ChangePasswordRequest;
 import com.fatec.runetasks.domain.dto.request.UserCreateRequest;
 import com.fatec.runetasks.domain.dto.request.UserUpdateRequest;
 import com.fatec.runetasks.domain.dto.response.UserResponse;
+import com.fatec.runetasks.domain.model.Role;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.UserService;
 
@@ -30,6 +31,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Controller para gerenciar endpoints relacionados a entidade {@link User}.
+ * <p>
+ * Fornece endpoints para operações CRUD, bem como para a seleção de avatares e
+ * alteração de senha. A maioria dos endpoints requer autenticação, e alguns são
+ * restritos a usuários com o {@link Role} de administrador.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ * @see UserService
+ */
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -39,6 +51,15 @@ public class UserController {
 
     private final UserService userService;
 
+    /**
+     * Endpoint para listar todos os usuários cadastrados no sistema.
+     * <p>
+     * Este endpoint é restrito a usuários com o papel de administrador.
+     * <p>
+     * 
+     * @return um {@link ResponseEntity} contendo a lista de todos os
+     *         {@link UserResponse} ou mensagem de erro.
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
@@ -51,6 +72,16 @@ public class UserController {
         return ResponseEntity.ok(userResponses);
     }
 
+    /**
+     * Endpoint para buscar um usuário pelo seu {@code id} no banco de dados.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário.
+     * <p>
+     * 
+     * @param id Identificador único do usuário.
+     * @return um {@link ResponseEntity} contendo o {@link UserResponse} ou
+     *         mensagem de erro.
+     */
     @GetMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     @Operation(summary = "Buscar usuário por ID", description = "Retorna os detalhes de um usuário específico")
@@ -64,6 +95,16 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
+    /**
+     * Endpoint para buscar o usuário atual autenticado no sistema.
+     * <p>
+     * Este endpoint é acessível para qualquer usuário autenticado no sistema.
+     * <p>
+     * 
+     * @param user Usuário autenticado.
+     * @return um {@link ResponseEntity} contendo o {@link UserResponse} ou
+     *         mensagem de erro.
+     */
     @GetMapping("profile")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Buscar perfil do usuário autenticado", description = "Retorna os detalhes do perfil do usuário autenticado")
@@ -76,6 +117,17 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
+    /**
+     * Endpoint para cadastrar um usuário no banco de dados.
+     * <p>
+     * Este endpoint não requer privilégios de administrador nem autenticação,
+     * permitindo que novos usuários se registrem no sistema.
+     * <p>
+     * 
+     * @param requestDTO Requisição contendo os dados do usuário.
+     * @return um {@link ResponseEntity} com status {@code 201 Created} se o
+     *         usuário for cadastrado com sucesso ou mensagem de erro.
+     */
     @PostMapping("register")
     @Operation(summary = "Cadastrar novo usuário", description = "Cria um novo usuário")
     @ApiResponses(value = {
@@ -89,6 +141,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * Endpoint para editar os dados de um usuário existente.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário.
+     * <p>
+     * 
+     * @param requestDTO Requisição contendo os dados atualizados do usuário.
+     * @param id         Identificador único do usuário a ser editado.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se o
+     *         usuário for atualizado com sucesso ou mensagem de erro.
+     */
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     @Operation(summary = "Editar usuário", description = "Atualiza os dados de um usuário existente")
@@ -98,11 +161,23 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<Void> editUser(@PathVariable Long id, @RequestBody UserUpdateRequest requestDTO) {
+    public ResponseEntity<Void> editUser(@RequestBody UserUpdateRequest requestDTO, @PathVariable Long id) {
         userService.updateUserById(id, requestDTO);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Endpoint para alterar a senha de um usuário existente.
+     * <p>
+     * Este endpoint é acessível para administradores ou para o próprio usuário.
+     * <p>
+     * 
+     * @param requestDTO Requisição contendo os dados para a alteração da senha do
+     *                   usuário.
+     * @param id         Identificador único do usuário.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se a
+     *         senha for alterada com sucesso ou mensagem de erro.
+     */
     @PatchMapping("{id}/password")
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     @Operation(summary = "Alterar senha do usuário", description = "Altera a senha de um usuário existente")
@@ -113,11 +188,17 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
             @ApiResponse(responseCode = "409", description = "Nova senha é idêntica a anterior")
     })
-    public ResponseEntity<Void> changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequest requestDTO) {
+    public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest requestDTO, @PathVariable Long id) {
         userService.changePassword(id, requestDTO);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * 
+     * @param user
+     * @param avatarName
+     * @return
+     */
     @PatchMapping("avatar/{avatarName}")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Selecionar avatar", description = "Seleciona um dos avatares disponíveis para o usuário autenticado")
@@ -131,6 +212,16 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Endpoint para deletar um usuário existente.
+     * <p>
+     * Este endpoint é restrito a usuários com o papel de administrador.
+     * <p>
+     * 
+     * @param id Identificador único do usuário a ser excluído.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se o
+     *         usuário for excluído ou mensagem de erro.
+     */
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Excluir usuário", description = "Exclui um usuário existente")
