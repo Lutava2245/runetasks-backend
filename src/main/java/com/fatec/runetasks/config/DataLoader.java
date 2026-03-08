@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Configuration
+@Profile("dev")
 public class DataLoader implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
