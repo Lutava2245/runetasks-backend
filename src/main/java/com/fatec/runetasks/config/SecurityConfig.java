@@ -21,6 +21,18 @@ import com.fatec.runetasks.util.JwtAuthFilter;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * Configuração de segurança para a aplicação.
+ * <p>
+ * Esta classe é responsável por configurar a segurança da aplicação, definindo
+ * as regras de autenticação e autorização, os filtros de segurança e os
+ * provedores de autenticação. Ela utiliza JWT para autenticação e autorização,
+ * garantindo que as requisições sejam protegidas e que apenas usuários
+ * autenticados possam acessar os recursos protegidos da API.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @AllArgsConstructor
 @Configuration
 @EnableWebSecurity
@@ -30,11 +42,24 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
 
+    /**
+     * Configura o PasswordEncoder para a aplicação, utilizando BCrypt para hashing
+     * de senhas.
+     * 
+     * @return um objeto {@link PasswordEncoder} configurado para a aplicação
+     */
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configura o DaoAuthenticationProvider para a aplicação, definindo o
+     * UserDetailsService e o PasswordEncoder.
+     * 
+     * @return um objeto {@link DaoAuthenticationProvider} configurado para a
+     *         aplicação
+     */
     @Bean
     DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
@@ -42,11 +67,34 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Configura o AuthenticationManager para a aplicação, utilizando a configuração
+     * de autenticação definida.
+     * 
+     * @param authConfig a configuração de autenticação da aplicação
+     * @return um objeto {@link AuthenticationManager} configurado para a aplicação
+     * @throws Exception se ocorrer um erro ao configurar o AuthenticationManager
+     */
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
+    /**
+     * Configura a cadeia de filtros de segurança para a aplicação.
+     * <p>
+     * Ele define as regras de autorização para as rotas, desabilita CSRF e
+     * configura a
+     * política de criação de sessão para stateless, além de adicionar o filtro de
+     * autenticação JWT antes do filtro de autenticação padrão do Spring Security.
+     * <p>
+     * 
+     * @param httpSecurity o objeto HttpSecurity para configurar as regras de
+     *                     segurança
+     * @return um objeto {@link SecurityFilterChain} configurado para a aplicação
+     * @throws Exception se ocorrer um erro ao configurar a cadeia de filtros de
+     *                   segurança
+     */
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
