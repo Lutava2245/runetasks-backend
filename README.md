@@ -39,7 +39,8 @@ O projeto foi desenvolvido utilizando **Java 21** e **Spring Boot 3.5.11**. Abai
 * **Lombok:** Reduz o código repetitivo (Getters, Setters, Construtores), mantendo os modelos de domínio e DTOs limpos.
 * **Springdoc OpenAPI (Swagger):** Utilizado para documentação interativa e testes manuais da API.
 * **JUnit 5 + Mockito:** Pilha de testes utilizada para garantir que a lógica de negócios funcione corretamente e de forma isolada.
-
+* **Spring Boot Actuator:** Configurado para expor endpoints de monitoramento e verificação da saúde (health checks) da API, garantindo observabilidade no ambiente de produção.
+  
 ---
 
 ## 🏛️ Arquitetura e Padrões
@@ -55,7 +56,7 @@ O projeto segue a **Arquitetura em Camadas** (Layered Architecture), separando a
 * **DTO (Data Transfer Object):** Separação estrita entre os Modelos do banco de dados e os contratos da API (Requests/Responses), garantindo a proteção de dados sensíveis.
 * **Arquitetura Orientada a Eventos:** Uso de eventos do Spring (ex: `UserBalanceChangedEvent`) para desacoplar ações financeiras da lógica de liberação de recompensas.
 * **Injeção de Dependências:** Adoção rigorosa do container nativo do Spring via construtores (e a anotação `@RequiredArgsConstructor` do Lombok). Essa é uma prática altamente recomendada no ecossistema Spring para manter instâncias únicas (Singletons), **evitando a recriação desnecessária de objetos** toda vez que a classe é acionada, além de garantir o baixo acoplamento e facilitar o isolamento em testes unitários.
-* **Exceções Customizadas de Domínio:** O projeto implementa diversas exceções próprias (como `InsufficientCoinsException`, `LockedTaskException` e `WeakPasswordException`). Isso permite capturar violações exatas das regras de negócio de forma semântica, evitando o uso de exceções genéricas (ex: `RuntimeException`). 
+* **Exceções Customizadas de Domínio:** O projeto implementa diversas exceções próprias (como `InsufficientCoinsException`, `LockedTaskException`, `WeakPasswordException`, `SamePasswordException` e `InvalidPasswordException`). Isso permite capturar violações exatas das regras de negócio de forma semântica, evitando o uso de exceções genéricas (ex: `RuntimeException`). 
 * **Tratamento Global de Exceções:** Aliado às exceções customizadas, usamos o padrão `@ControllerAdvice` (`GlobalExceptionHandler`) que centraliza a captura desses erros de domínio e os converte em respostas HTTP padronizadas e amigáveis para o Frontend.
 
 ---
@@ -200,7 +201,7 @@ mvn test
 ### Cobertura e Escopo
 
 * **Testes de Serviço Isoldados (`JUnit 5` + `Mockito`):** Focados intensamente na validação da camada de *Services* (exemplos: `TaskServiceTest`, `RewardServiceTest`, `UserServiceTest`, `StoreServiceTest`). O banco de dados não é acionado (usando *Mocks*), garantindo execução extremamente rápida e isolamento absoluto de infraestrutura.
-* **Cenários Validados:** A bateria valida desde os fluxos críticos de avanço temporal — como recalcular o vencimento de tarefas recorrentes em atraso ou bloquear alterações indevidas —, até proibições econômicas da loja capturadas de forma elegante via exceções customizadas (`InsufficientCoinsException`), finalizando com checagens estritas das métricas de complexidade de senha na etapa de registro por meio da intercepção da `WeakPasswordException`.
+* **Cenários Validados:** A bateria valida desde os fluxos críticos de avanço temporal — como recalcular o vencimento de tarefas recorrentes em atraso ou bloquear alterações indevidas —, até proibições econômicas da loja capturadas de forma elegante via exceções customizadas (`InsufficientCoinsException`), finalizando com checagens estritas das métricas de complexidade de senha na etapa de registro e alteração por meio da intercepção da `WeakPasswordException` e `SamePasswordException`.
 
 ---
 
@@ -213,6 +214,7 @@ A documentação completa, compreendendo os DTOs (Data Transfer Objects), esquem
 * `POST /api/users/register`: Ponto de entrada público destinado ao cadastramento ágil e seguro de novas contas na plataforma.
 * `GET /api/users/profile`: Recupera os detalhes operacionais e as métricas de progresso do usuário logado (XP total, nível atual, contagem de moedas e perfil do avatar).
 * `PATCH /api/users/avatar/{avatarName}`: Equipa um avatar cosmético, validando rigorosamente e de forma prévia se o usuário efetivamente comprou o item na loja de avatares.
+* `PATCH /api/users/password`: Permite que o utilizador autenticado altere a sua senha de forma segura. A rota exige o envio da senha atual para validação, impede a reutilização da senha antiga (`SamePasswordException`) e submete a nova credencial às rigorosas políticas de complexidade do sistema (`WeakPasswordException`).
 
 ### 📋 Tarefas (`/api/tasks`)
 * `POST /api/tasks/register`: Realiza a vinculação de uma nova meta de rotina no escopo do usuário, atrelada obrigatoriamente a uma Skill ativa do catálogo pessoal.
@@ -229,6 +231,8 @@ A documentação completa, compreendendo os DTOs (Data Transfer Objects), esquem
 * `PATCH /api/store/buy/avatar/{avatarId}`: Processo transacional seguro de aquisição em loja. Avalia de forma precisa o saldo da conta, efetua a dedução (débito) matemática do capital digital do jogador e grava imediatamente o vínculo de compra, garantindo de fato o registro histórico inalterável do item na carteira da conta vinculada.
 * `PATCH /api/store/buy/reward/{rewardId}`: Trata-se do resgate físico e concreto da recompensa projetada outrora, baixando formalmente a flag relacional do banco de dados de status de *AVAILABLE* para o status permanente e irrevogável de *REDEEMED*.
 
+### ⚙️ Monitoramento e Saúde (Actuator)
+* `GET /actuator/health`: Retorna o status de saúde da aplicação e suas integrações (como o banco de dados). Rota essencial para ferramentas de monitoramento e orquestração em ambiente de produção verificarem se a API está "viva" e pronta para receber requisições.
 ---
 
 # 🗄 Modelagem do Banco de Dados
