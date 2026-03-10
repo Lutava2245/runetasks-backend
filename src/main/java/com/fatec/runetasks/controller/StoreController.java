@@ -101,7 +101,6 @@ public class StoreController {
      * da recompensa.
      * <p>
      * 
-     * @param user     Usuário autenticado.
      * @param rewardId Identificador único da recompensa a ser resgatada.
      * @return um {@link ResponseEntity} com status {@code 204 No Content} se a
      *         recompensa for resgatada com sucesso ou mensagem de erro.

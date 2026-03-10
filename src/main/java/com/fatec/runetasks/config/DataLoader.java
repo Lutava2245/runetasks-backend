@@ -9,7 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fatec.runetasks.domain.model.Avatar;
 import com.fatec.runetasks.domain.model.Role;
@@ -58,7 +57,7 @@ public class DataLoader implements CommandLineRunner {
     private String adminEmail;
 
     /**
-     * O password do usuário administrador inicial, lido do arquivo de configuração
+     * A senha do usuário administrador inicial, lido do arquivo de configuração
      * da aplicação (application.properties).
      */
     @Value("${app.admin.password}")
@@ -78,7 +77,6 @@ public class DataLoader implements CommandLineRunner {
      * avatares. O usuário é então salvo no banco de dados.
      * <p>
      */
-    @Transactional
     protected void createAdmin() {
         if (!userRepository.existsByEmail(adminEmail)) {
             Role adminRole = roleRepository.findByName("ROLE_ADMIN")

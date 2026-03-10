@@ -101,7 +101,7 @@ public class UserController {
      * Este endpoint é acessível para qualquer usuário autenticado no sistema.
      * <p>
      * 
-     * @param user Usuário autenticado.
+     * @param authenticatedUser Usuário autenticado.
      * @return um {@link ResponseEntity} contendo o {@link UserResponse} ou
      *         mensagem de erro.
      */
@@ -194,10 +194,15 @@ public class UserController {
     }
 
     /**
-     * 
-     * @param user
-     * @param avatarName
-     * @return
+     * Endpoint para alterar o avatar atual do usuário autenticado.
+     * <p>
+     * Este endpoint é acessível para qualquer usuário autenticado no sistema.
+     * <p>
+     *
+     * @param authenticatedUser Usuário autenticado.
+     * @param avatarName Nome do avatar a ser definido para o usuário.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se a
+     *         senha for alterada com sucesso ou mensagem de erro.
      */
     @PatchMapping("avatar/{avatarName}")
     @PreAuthorize("isAuthenticated()")
@@ -207,8 +212,8 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Avatar não encontrado")
     })
-    public ResponseEntity<Void> selectAvatar(@AuthenticationPrincipal User user, @PathVariable String avatarName) {
-        userService.selectAvatar(user, avatarName);
+    public ResponseEntity<Void> selectAvatar(@AuthenticationPrincipal User authenticatedUser, @PathVariable String avatarName) {
+        userService.selectAvatar(authenticatedUser, avatarName);
         return ResponseEntity.noContent().build();
     }
 

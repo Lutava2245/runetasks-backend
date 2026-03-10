@@ -63,7 +63,7 @@ public interface TaskService {
      * 
      * @param taskId  Identificador único da tarefa.
      * @param skillId Identificador único da habilidade.
-     * @return {@code true} se a tarefa pertencer a habilidade,
+     * @return {@code true} se a tarefa pertencer à habilidade,
      *         {@code false} caso contrário.
      * @throws ResourceNotFoundException Caso a tarefa não seja encontrada.
      */
@@ -100,7 +100,7 @@ public interface TaskService {
     /**
      * Obtém uma lista contendo todas as tarefas registradas pelo usuário.
      * 
-     * @param id Identificador único do usuário.
+     * @param userId Identificador único do usuário.
      * @return uma {@link List} de {@link TaskResponse} contendo as tarefas
      *         convertidas para DTO.
      */
@@ -110,7 +110,7 @@ public interface TaskService {
      * Obtém uma lista contendo todas as tarefas registradas em uma habilidade
      * específica.
      * 
-     * @param id Identificador único da habilidade.
+     * @param skillId Identificador único da habilidade.
      * @return uma {@link List} de {@link TaskResponse} contendo as tarefas
      *         convertidas para DTO.
      */

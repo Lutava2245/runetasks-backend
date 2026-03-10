@@ -65,9 +65,7 @@ public class RewardServiceImpl implements RewardService {
         List<Reward> rewards = rewardRepository.findByUserId(user.getId());
         rewards.stream()
                 .filter(r -> r.getStatus() != RewardStatus.REDEEMED)
-                .forEach(r -> {
-                    r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE);
-                });
+                .forEach(r -> r.setStatus(user.getTotalCoins() >= r.getPrice() ? RewardStatus.AVAILABLE : RewardStatus.EXPENSIVE));
         rewardRepository.saveAll(rewards);
     }
 
@@ -100,7 +98,6 @@ public class RewardServiceImpl implements RewardService {
     @Override
     public void createReward(RewardCreateRequest request, User user) {
         int price = switch (request.getLikeLevel()) {
-            case 1 -> 30;
             case 2 -> 50;
             case 3 -> 75;
             case 4 -> 100;
