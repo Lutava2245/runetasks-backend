@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.fatec</groupId>
 	<artifactId>runetasks</artifactId>
-	<version>1.2.3-SNAPSHOT</version>
+	<version>1.2.4-SNAPSHOT</version>
 	<name>runetasks</name>
 	<description>Sistema gameficado de gerenciamento de tarefas com recompensas e pontuações</description>
 	<url>https://github.com/Lutava2245/runetasks-backend</url>
@@ -123,7 +123,11 @@
 			<version>0.13.0</version>
 			<scope>runtime</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
