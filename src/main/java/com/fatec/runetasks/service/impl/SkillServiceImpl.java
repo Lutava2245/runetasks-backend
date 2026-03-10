@@ -67,6 +67,11 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
+    public boolean isOwnerByName(String name, Long userId) {
+        return skillRepository.existsByNameAndUserId(name, userId);
+    }
+
+    @Override
     public SkillResponse getById(Long id) {
         Skill skill = skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
@@ -94,7 +99,7 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public void createSkill(SkillRequest request, User user) {
-        if (skillRepository.existsByNameAndUser(request.getName(), user)) {
+        if (skillRepository.existsByNameAndUserId(request.getName(), user.getId())) {
             throw new DuplicateResourceException("Erro: Habilidade de mesmo nome já existente.");
         }
 
@@ -113,7 +118,7 @@ public class SkillServiceImpl implements SkillService {
                 .orElseThrow(() -> new ResourceNotFoundException("Erro: Habilidade não encontrada."));
 
         if (!skill.getName().equals(request.getName())
-                && skillRepository.existsByNameAndUser(request.getName(), skill.getUser())) {
+                && skillRepository.existsByNameAndUserId(request.getName(), skill.getUser().getId())) {
             throw new DuplicateResourceException("Erro: Habilidade de mesmo nome já existente.");
         }
 

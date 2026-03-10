@@ -52,6 +52,18 @@ public interface SkillService {
     boolean isOwner(Long skillId, Long userId);
 
     /**
+     * Verifica se o usuário é dono da habilidade utilizando seu nome.
+     * <p>
+     * É utilizado para garantir que apenas o dono da habilidade possa utilizá-la.
+     * <p>
+     * @param name Nome da habilidade.
+     * @param userId Identificador único do usuário.
+     * @return {@code true} se o usuário for dono da habilidade,
+     *         {@code false} caso contrário.
+     */
+    boolean isOwnerByName(String name, Long userId);
+
+    /**
      * Obtém uma habilidade pelo seu {@code id}.
      * 
      * @param id Identificador único da habilidade.

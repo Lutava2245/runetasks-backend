@@ -11,10 +11,8 @@ import com.fatec.runetasks.domain.model.User;
 
 @Repository
 public interface SkillRepository extends JpaRepository<Skill, Long> {
-    
-    boolean existsByNameAndUser(String name, User user);
 
-    boolean existsByUser(User user);
+    boolean existsByNameAndUserId(String name, Long id);
 
     Optional<Skill> findByNameAndUser(String name, User user);
 
