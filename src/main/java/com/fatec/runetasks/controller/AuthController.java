@@ -1,20 +1,17 @@
 package com.fatec.runetasks.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fatec.runetasks.domain.dto.request.LoginRequest;
+import com.fatec.runetasks.domain.dto.response.LoginResponse;
 import com.fatec.runetasks.domain.model.User;
+import com.fatec.runetasks.service.AuthService;
 import com.fatec.runetasks.service.impl.UserDetailsServiceImpl;
-import com.fatec.runetasks.util.JwtUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,20 +32,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Autenticação", description = "Endpoints para gerenciamento de autenticação de usuários")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
-
-    /**
-     * Requisição DTO que recebe dados para a autenticação.
-     */
-    public record LoginRequest(String username, String password) {
-    }
-
-    /**
-     * Classe DTO que representa o token JWT gerado após autenticação.
-     */
-    public record LoginResponse(String jwtToken) {
-    }
+    private final AuthService authService;
 
     /**
      * Endpoint para autenticar um usuário e gerar um token JWT.
@@ -62,19 +46,9 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Usuário autenticado com sucesso"),
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
     })
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.username(),
-                            loginRequest.password()));
-
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String jwt = jwtUtil.generateToken(userDetails);
-
-            return ResponseEntity.ok(new LoginResponse(jwt));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
-        }
+    public ResponseEntity<LoginResponse> authenticateUser(@RequestBody LoginRequest request) {
+        LoginResponse loginResponse = authService.authenticate(request);
+        return ResponseEntity.ok(loginResponse);
     }
+
 }

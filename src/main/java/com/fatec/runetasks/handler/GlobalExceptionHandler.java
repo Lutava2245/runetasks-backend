@@ -33,13 +33,20 @@ public class GlobalExceptionHandler {
                 .body("Método HTTP inválido. " + exception.getMessage());
     }
 
-
     @ExceptionHandler(io.jsonwebtoken.ExpiredJwtException.class)
     public ResponseEntity<String> handleExpiredJwtException(
             io.jsonwebtoken.ExpiredJwtException exception) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body("Acesso Negado. O Token fornecido já foi expirado, faça o login novamente.\n" + exception.getMessage());
+    }
+
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<String> handleAuthentication(
+            org.springframework.security.core.AuthenticationException exception) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Credenciais inválidas. " + exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
