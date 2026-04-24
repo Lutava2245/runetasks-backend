@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fatec.runetasks.domain.dto.request.ForgotPasswordRequest;
 import com.fatec.runetasks.domain.dto.request.LoginRequest;
 import com.fatec.runetasks.domain.dto.response.LoginResponse;
 import com.fatec.runetasks.domain.model.User;
@@ -49,6 +50,12 @@ public class AuthController {
     public ResponseEntity<LoginResponse> authenticateUser(@RequestBody LoginRequest request) {
         LoginResponse loginResponse = authService.authenticate(request);
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("forgot-password")
+    public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authService.initiatePasswordReset(request);
+        return ResponseEntity.accepted().build();
     }
 
 }
