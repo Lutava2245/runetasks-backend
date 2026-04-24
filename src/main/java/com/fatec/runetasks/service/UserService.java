@@ -44,18 +44,6 @@ public interface UserService {
     UserResponse convertToDTO(User user);
 
     /**
-     * Verifica a força da senha recebida.
-     * <p>
-     * O processo verifica se {@code password} possui pelo menos 8 caracteres, uma
-     * letra maiúscula, uma letra minúscula e um número.
-     * <p>
-     * 
-     * @param password uma {@link String} a ser verificada.
-     * @throws WeakPasswordException Caso a senha não seja forte o suficiente.
-     */
-    void verifyPasswordStrength(String password);
-
-    /**
      * Obtém um usuário pelo seu {@code id}.
      * 
      * @param id Identificador único da tarefa.
