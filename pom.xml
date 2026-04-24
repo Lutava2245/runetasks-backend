@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.11</version>
+		<version>3.5.13</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.fatec</groupId>
 	<artifactId>runetasks</artifactId>
-	<version>1.2.4-SNAPSHOT</version>
+	<version>1.3.0-SNAPSHOT</version>
 	<name>runetasks</name>
 	<description>Sistema gameficado de gerenciamento de tarefas com recompensas e pontuações</description>
 	<url>https://github.com/Lutava2245/runetasks-backend</url>
@@ -66,6 +66,14 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
@@ -74,7 +82,6 @@
 		<dependency>
 			<groupId>jakarta.validation</groupId>
 			<artifactId>jakarta.validation-api</artifactId>
-			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
