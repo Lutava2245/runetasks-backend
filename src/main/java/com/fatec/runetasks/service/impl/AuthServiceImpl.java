@@ -9,19 +9,25 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
 import com.fatec.runetasks.domain.dto.request.ForgotPasswordRequest;
 import com.fatec.runetasks.domain.dto.request.LoginRequest;
+import com.fatec.runetasks.domain.dto.request.ResetPasswordRequest;
 import com.fatec.runetasks.domain.dto.response.LoginResponse;
 import com.fatec.runetasks.domain.model.PasswordToken;
 import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.repository.PasswordTokenRepository;
 import com.fatec.runetasks.domain.repository.UserRepository;
+import com.fatec.runetasks.exception.ResourceNotFoundException;
+import com.fatec.runetasks.exception.SamePasswordException;
+import com.fatec.runetasks.exception.TokenExpiredException;
 import com.fatec.runetasks.service.AuthService;
 import com.fatec.runetasks.util.EmailHelper;
 import com.fatec.runetasks.util.JwtUtil;
+import com.fatec.runetasks.util.PasswordValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +41,10 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtil jwtUtil;
+
+    private final PasswordValidator passwordValidator;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final EmailHelper emailHelper;
 
@@ -89,6 +99,30 @@ public class AuthServiceImpl implements AuthService {
                 "Redefinição de Senha - RuneTasks",
                 "mail/reset-password",
                 context);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+        PasswordToken passwordToken = passwordTokenRepository.findByToken(request.getResetToken())
+                .orElseThrow(() -> new ResourceNotFoundException("Erro: Token não encontrado"));
+
+        if (passwordToken.isExpired()) {
+            passwordTokenRepository.delete(passwordToken);
+            throw new TokenExpiredException();
+        }
+
+        User user = passwordToken.getUser();
+
+        passwordValidator.verifyStrength(request.getNewPassword());
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new SamePasswordException();
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        passwordTokenRepository.delete(passwordToken);
     }
 
 }
