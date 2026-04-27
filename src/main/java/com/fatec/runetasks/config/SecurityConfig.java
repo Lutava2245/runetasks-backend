@@ -87,6 +87,13 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
+    /**
+     * Configura a política de CORS para a aplicação, permitindo requisições de
+     * qualquer origem, os métodos HTTP e os cabeçalhos permitidos.
+     * 
+     * @return um objeto {@link CorsConfigurationSource} configurado para a
+     *         aplicação
+     */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -103,9 +110,9 @@ public class SecurityConfig {
      * Configura a cadeia de filtros de segurança para a aplicação.
      * <p>
      * Ele define as regras de autorização para as rotas, desabilita CSRF e
-     * configura a
-     * política de criação de sessão para stateless, além de adicionar o filtro de
-     * autenticação JWT antes do filtro de autenticação padrão do Spring Security.
+     * configura a política de criação de sessão para stateless, além de adicionar o
+     * filtro de autenticação JWT antes do filtro de autenticação padrão do Spring
+     * Security.
      * <p>
      * 
      * @param httpSecurity o objeto HttpSecurity para configurar as regras de
