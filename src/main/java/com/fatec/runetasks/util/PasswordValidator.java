@@ -4,6 +4,12 @@ import org.springframework.stereotype.Component;
 
 import com.fatec.runetasks.exception.WeakPasswordException;
 
+/**
+ * Utilitário para operações relacionadas à validação de senhas.
+ * 
+ * @author Luan T. Felix
+ * @see WeakPasswordException
+ */
 @Component
 public class PasswordValidator {
 
