@@ -53,13 +53,40 @@ public class AuthController {
         return ResponseEntity.ok(loginResponse);
     }
 
+    /**
+     * Endpoint para iniciar o processo de recuperação de senha.
+     * 
+     * @param request DTO contendo o email do usuário para iniciar o processo de
+     *                recuperação de senha.
+     * @return um {@link ResponseEntity} com status {@code 202 Accepted} se a
+     *         solicitação for aceita ou mensagem de erro.
+     */
     @PostMapping("forgot-password")
+    @Operation(summary = "Iniciar processo de recuperação de senha", description = "Envia um email com link para redefinir a senha")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Solicitação aceita"),
+    })
     public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         authService.initiatePasswordReset(request);
         return ResponseEntity.accepted().build();
     }
 
+    /**
+     * Endpoint para redefinir a senha do usuário.
+     * 
+     * @param request DTO contendo o token de troca de senha e a nova senha para
+     *                redefinir a senha do usuário.
+     * @return um {@link ResponseEntity} com status {@code 204 No Content} se a
+     *         senha for redefinida com sucesso ou mensagem de erro.
+     */
     @PostMapping("reset-password")
+    @Operation(summary = "Redefinir senha", description = "Redefine a senha do usuário com base em um token de troca")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Senha redefinida com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Token inválido ou expirado"),
+            @ApiResponse(responseCode = "404", description = "Token não encontrado"),
+            @ApiResponse(responseCode = "409", description = "Nova senha é igual à anterior")
+    })
     public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request) {
         authService.resetPassword(request);
         return ResponseEntity.noContent().build();
