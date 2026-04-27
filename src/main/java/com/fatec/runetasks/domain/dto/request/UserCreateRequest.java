@@ -1,6 +1,8 @@
 package com.fatec.runetasks.domain.dto.request;
 
+import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.UserService;
+import com.fatec.runetasks.util.PasswordValidator;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -48,7 +50,7 @@ public class UserCreateRequest {
      * Não pode ser nulo ou em branco. Deve ter no mínimo 8 caracteres.
      * <p>
      * 
-     * @see UserService#verifyPasswordStrength(String)
+     * @see PasswordValidator#verifyStrength(String)
      */
     @Valid
     @NotBlank

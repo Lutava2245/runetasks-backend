@@ -16,6 +16,7 @@ import com.fatec.runetasks.exception.InvalidPasswordException;
 import com.fatec.runetasks.exception.ResourceNotFoundException;
 import com.fatec.runetasks.exception.SamePasswordException;
 import com.fatec.runetasks.exception.WeakPasswordException;
+import com.fatec.runetasks.util.PasswordValidator;
 
 /**
  * Interface de serviço para operações da entidade {@link User}.
@@ -73,7 +74,7 @@ public interface UserService {
      * @throws WeakPasswordException      Caso a senha não seja forte o suficiente.
      * @throws ResourceNotFoundException  Caso o role ou o avatar não sejam
      *                                    encontrados.
-     * @see #verifyPasswordStrength(String)
+     * @see PasswordValidator#verifyStrength(String)
      */
     void createUser(UserCreateRequest request);
 
@@ -100,7 +101,7 @@ public interface UserService {
      * @throws SamePasswordException     Caso a nova senha seja igual à senha atual.
      * @throws WeakPasswordException     Caso a nova senha não seja forte o
      *                                   suficiente.
-     * @see #verifyPasswordStrength(String)
+     * @see PasswordValidator#verifyStrength(String)
      */
     void changePassword(Long id, ChangePasswordRequest request);
 
