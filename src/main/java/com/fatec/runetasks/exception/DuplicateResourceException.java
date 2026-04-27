@@ -11,7 +11,8 @@ import org.springframework.http.HttpStatus;
 public class DuplicateResourceException extends ApiException {
 
     /**
-     * Construtor para nova instância de exceção de recurso duplicado com uma mensagem.
+     * Construtor para nova instância de exceção de recurso duplicado com uma
+     * mensagem.
      * 
      * @param message a mensagem de erro associada à exceção
      */
