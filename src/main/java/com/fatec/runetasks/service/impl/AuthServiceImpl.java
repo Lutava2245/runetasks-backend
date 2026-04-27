@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import com.fatec.runetasks.domain.dto.request.ForgotPasswordRequest;
@@ -31,6 +32,18 @@ import com.fatec.runetasks.util.PasswordValidator;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Classe de serviço para operações de autenticação e gerenciamento de senhas de
+ * {@link User}.
+ * <p>
+ * Contém métodos para autenticar usuários, iniciar o processo de redefinição de
+ * senha e para redefinir a senha.
+ * <p>
+ * Esta classe é uma implementação concreta da interface {@link AuthService}.
+ * <p>
+ * 
+ * @author Luan T. Felix
+ */
 @RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -65,6 +78,7 @@ public class AuthServiceImpl implements AuthService {
         return new LoginResponse(jwt);
     }
 
+    @Transactional
     @Override
     public void initiatePasswordReset(ForgotPasswordRequest resquest) {
         Optional<User> userOptional = userRepository.findByEmail(resquest.getEmail());
