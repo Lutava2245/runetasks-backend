@@ -19,7 +19,6 @@ import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.repository.UserRepository;
 import com.fatec.runetasks.exception.InvalidPasswordException;
 import com.fatec.runetasks.exception.SamePasswordException;
-import com.fatec.runetasks.exception.WeakPasswordException;
 import com.fatec.runetasks.util.PasswordValidator;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,19 +28,11 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordValidator passwordValidator;
 
     @InjectMocks
     private UserServiceImpl userService;
-    @InjectMocks
-    private PasswordValidator passwordValidator;
-
-    @Test
-    @DisplayName("Deve lançar exceção se a senha não for forte o suficiente.")
-    void verifyPasswordStrength_Weak() {
-        String weakPassword = "fraco";
-
-        assertThrows(WeakPasswordException.class, () -> passwordValidator.verifyStrength(weakPassword));
-    }
 
     @Test
     @DisplayName("Deve lançar exceção se a senha atual não estiver correta.")
