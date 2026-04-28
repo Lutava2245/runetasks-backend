@@ -22,7 +22,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class EmailConfig {
 
     /**
-     * O nome de usuário (endereço de email) usado para autenticação no servidor SMTP.
+     * O nome de usuário (endereço de email) usado para autenticação no servidor
+     * SMTP.
      * <p>
      * Ele é lido do arquivo de configuração da aplicação (application.properties) e
      * deve ser um endereço de email válido que tenha permissão para enviar emails
@@ -36,11 +37,22 @@ public class EmailConfig {
      * A senha usada para autenticação no servidor SMTP.
      * <p>
      * Ela é lida do arquivo de configuração da aplicação (application.properties) e
-     * deve ser a senha correspondente ao endereço de email configurado como nome de usuário.
+     * deve ser a senha correspondente ao endereço de email configurado como nome de
+     * usuário.
      * <p>
      */
     @Value("${spring.mail.password}")
     private String password;
+
+    /**
+     * O host do servidor SMTP.
+     * <p>
+     * Ele é lido do arquivo de configuração da aplicação (application.properties) e
+     * deve ser o endereço do servidor SMTP que será utilizado para envio de emails.
+     * <p>
+     */
+    @Value("${spring.mail.host}")
+    private String host;
 
     /**
      * Configura o JavaMailSender para a aplicação, definindo as propriedades de
@@ -51,7 +63,7 @@ public class EmailConfig {
     @Bean
     JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
+        mailSender.setHost(host);
         mailSender.setPort(587);
 
         mailSender.setUsername(username);
