@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.fatec.runetasks.exception.InvalidPasswordException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -67,6 +68,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse authenticate(LoginRequest request) {
+        User user = userRepository.findByEmailOrNickname(request.getUsername(), request.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Erro: Usuário não encontrado."));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),

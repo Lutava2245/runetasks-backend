@@ -106,7 +106,7 @@ public class StoreController {
      *         recompensa for resgatada com sucesso ou mensagem de erro.
      */
     @PatchMapping("buy/reward/{rewardId}")
-    @PreAuthorize("hasRole('ADMIN') or @rewardServiceImpl.isOwner(#id, principal.id)")
+    @PreAuthorize("hasRole('ADMIN') or @rewardServiceImpl.isOwner(#rewardId, principal.id)")
     @Operation(summary = "Reivindicar recompensa", description = "Reivindica uma recompensa para o usuário autenticado")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Recompensa reivindicada com sucesso"),
