@@ -152,13 +152,13 @@ public class Task {
      * Dependendo o tipo de recorrência da tarefa, a nova data é definida:
      * <ul>
      * <li>
-     * Diária -> data é atualizada para o dia atual
+     * Diária → data é atualizada para o dia atual
      * </li>
      * <li>
-     * Semanal -> data é atualizada para o próximo dia da semana correspondente
+     * Semanal → data é atualizada para o próximo dia da semana correspondente
      * </li>
      * <li>
-     * Mensal -> data é atualizada para o próximo dia do mês correspondente
+     * Mensal → data é atualizada para o próximo dia do mês correspondente
      * </li>
      * </ul>
      * 

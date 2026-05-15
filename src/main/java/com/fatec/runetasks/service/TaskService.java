@@ -55,7 +55,7 @@ public interface TaskService {
     boolean isOwner(Long taskId, Long userId);
 
     /**
-     * Verifica se a tarefa pertence a habilidade especificada.
+     * Verifica se a tarefa pertence à habilidade especificada.
      * <p>
      * É utilizado para garantir que apenas tarefas de uma habilidade específica
      * sejam utilizadas.

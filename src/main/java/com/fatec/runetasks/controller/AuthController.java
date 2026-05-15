@@ -39,7 +39,7 @@ public class AuthController {
     /**
      * Endpoint para autenticar um usuário e gerar um token JWT.
      * 
-     * @param loginRequest DTO contendo o nome de usuário e senha para autenticação.
+     * @param request DTO contendo o nome de usuário e senha para autenticação.
      * @return um {@link ResponseEntity} contendo o token JWT ou mensagem de erro.
      */
     @PostMapping("login")

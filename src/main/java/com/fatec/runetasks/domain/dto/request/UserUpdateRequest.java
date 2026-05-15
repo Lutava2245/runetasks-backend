@@ -1,5 +1,6 @@
 package com.fatec.runetasks.domain.dto.request;
 
+import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.service.UserService;
 
 import io.swagger.v3.oas.annotations.media.Schema;

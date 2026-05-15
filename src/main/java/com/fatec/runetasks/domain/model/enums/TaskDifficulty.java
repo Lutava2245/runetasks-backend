@@ -1,5 +1,7 @@
 package com.fatec.runetasks.domain.model.enums;
 
+import com.fatec.runetasks.domain.model.Task;
+
 /**
  * Representa as dificuldades disponíveis de uma {@link Task}.
  * <p>

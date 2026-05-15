@@ -140,8 +140,7 @@ public class User implements UserDetails {
     /**
      * Retorna o {@code username} do usuário utilizado para autenticação.
      * <p>
-     * O {@code username} pode ser o e-mail do usuário ou seu nickname. Este método
-     * retorna o email.
+     * O {@code username} pode ser o e-mail do usuário ou seu nickname.
      * <p>
      * 
      * @return o email do usuário.

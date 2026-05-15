@@ -96,11 +96,11 @@ public interface RewardService {
      * O preço da recompensa é definido com base no nível do quanto o usuário gosta
      * desta recompensa:
      * <ul>
-     * <li>Nível 1 -> 30 moedas</li>
-     * <li>Nível 2 -> 50 moedas</li>
-     * <li>Nível 3 -> 75 moedas</li>
-     * <li>Nível 4 -> 100 moedas</li>
-     * <li>Nível 5 -> 150 moedas</li>
+     * <li>Nível 1 → 30 moedas</li>
+     * <li>Nível 2 → 50 moedas</li>
+     * <li>Nível 3 → 75 moedas</li>
+     * <li>Nível 4 → 100 moedas</li>
+     * <li>Nível 5 → 150 moedas</li>
      * </ul>
      * <p>
      * O status da recompensa é definido como {@link RewardStatus#AVAILABLE} se o

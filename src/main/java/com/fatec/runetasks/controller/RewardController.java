@@ -67,8 +67,8 @@ public class RewardController {
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
     public ResponseEntity<List<RewardResponse>> getAllRewards() {
-        List<RewardResponse> RewardResponses = rewardService.getAll();
-        return ResponseEntity.ok(RewardResponses);
+        List<RewardResponse> rewardResponses = rewardService.getAll();
+        return ResponseEntity.ok(rewardResponses);
     }
 
     /**
@@ -90,8 +90,8 @@ public class RewardController {
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
     public ResponseEntity<List<RewardResponse>> getAllRewardsByUser(@PathVariable Long id) {
-        List<RewardResponse> RewardResponses = rewardService.getByUserId(id);
-        return ResponseEntity.ok(RewardResponses);
+        List<RewardResponse> rewardResponses = rewardService.getByUserId(id);
+        return ResponseEntity.ok(rewardResponses);
     }
 
     /**
@@ -114,8 +114,8 @@ public class RewardController {
             @ApiResponse(responseCode = "404", description = "Recompensa não encontrada")
     })
     public ResponseEntity<RewardResponse> getReward(@PathVariable Long id) {
-        RewardResponse RewardResponse = rewardService.getById(id);
-        return ResponseEntity.ok(RewardResponse);
+        RewardResponse rewardResponse = rewardService.getById(id);
+        return ResponseEntity.ok(rewardResponse);
     }
 
     /**

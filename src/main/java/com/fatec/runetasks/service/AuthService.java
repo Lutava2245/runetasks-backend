@@ -1,7 +1,9 @@
 package com.fatec.runetasks.service;
 
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
+import com.fatec.runetasks.domain.model.User;
 import com.fatec.runetasks.domain.dto.request.ForgotPasswordRequest;
 import com.fatec.runetasks.domain.dto.request.LoginRequest;
 import com.fatec.runetasks.domain.dto.request.ResetPasswordRequest;

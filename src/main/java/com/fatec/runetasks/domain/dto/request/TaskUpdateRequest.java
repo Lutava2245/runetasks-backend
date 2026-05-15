@@ -2,6 +2,7 @@ package com.fatec.runetasks.domain.dto.request;
 
 import java.time.LocalDate;
 
+import com.fatec.runetasks.domain.model.Task;
 import com.fatec.runetasks.domain.model.enums.RepeatType;
 import com.fatec.runetasks.service.TaskService;
 
